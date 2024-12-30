@@ -12,7 +12,7 @@ import { CalendarX, Calendar as CalendarIcon, CheckCircle } from "lucide-react";
 
 export const BookingForm = () => {
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [date, setDate] = useState<DateRange | undefined>();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -78,6 +78,7 @@ export const BookingForm = () => {
           name,
           phone,
           comment,
+          language,
           fromEmail: 'onboarding@resend.dev'
         }
       });
