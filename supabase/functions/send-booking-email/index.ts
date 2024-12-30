@@ -11,18 +11,20 @@ interface BookingEmailRequest {
   startDate: string;
   endDate: string;
   email: string;
+  name: string;
+  phone?: string;
+  comment?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { startDate, endDate, email }: BookingEmailRequest = await req.json();
+    const { startDate, endDate, email, name, phone, comment }: BookingEmailRequest = await req.json();
 
-    console.log(`Sending booking confirmation email for dates: ${startDate} to ${endDate} to ${email}`);
+    console.log(`Sending booking request email for ${name} (${email}) for dates: ${startDate} to ${endDate}`);
 
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -31,18 +33,21 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Gjedrem Rentals <onboarding@resend.dev>", // Using Resend's default domain
+        from: "Gjedrem Rentals <onboarding@resend.dev>",
         to: [email],
-        subject: "Booking Confirmation",
+        subject: "Booking Request Received",
         html: `
-          <h1>Booking Confirmation</h1>
-          <p>Thank you for your booking at Gjedrem Rentals!</p>
-          <p>Your booking details:</p>
+          <h1>Booking Request Received</h1>
+          <p>Dear ${name},</p>
+          <p>Your booking request has been received with the following details:</p>
           <ul>
             <li>Check-in: ${startDate}</li>
             <li>Check-out: ${endDate}</li>
+            ${phone ? `<li>Phone: ${phone}</li>` : ''}
+            ${comment ? `<li>Comment: ${comment}</li>` : ''}
           </ul>
-          <p>We look forward to hosting you!</p>
+          <p>You will be contacted by email/phone if the stay is confirmed.</p>
+          <p>Best regards,<br>Karl Gjedrem</p>
         `,
       }),
     });

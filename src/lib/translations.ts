@@ -39,6 +39,25 @@ export const translations = {
       title: "Transport",
       description: "Busstopp like ved huset/leiligheten.",
     },
+    booking: {
+      title: "Book opphold",
+      name: "Navn",
+      email: "E-post",
+      phone: "Telefon",
+      comment: "Kommentar",
+      submit: "Send forespørsel",
+      required: "Påkrevd",
+      dates: "Velg datoer",
+      legend: {
+        occupied: "Opptatt",
+        selected: "Valgt",
+        today: "I dag"
+      },
+      confirmation: {
+        title: "Forespørsel mottatt",
+        message: "Din forespørsel er sendt. Du vil bli kontaktet på e-post/telefon hvis oppholdet blir bekreftet.\n\nMed vennlig hilsen\nKarl Gjedrem"
+      }
+    }
   },
   gb: {
     nav: {
@@ -80,6 +99,25 @@ export const translations = {
       title: "Transport",
       description: "Bus stop right by the house/apartment.",
     },
+    booking: {
+      title: "Book Your Stay",
+      name: "Name",
+      email: "Email",
+      phone: "Phone",
+      comment: "Comment",
+      submit: "Send Request",
+      required: "Required",
+      dates: "Select dates",
+      legend: {
+        occupied: "Occupied",
+        selected: "Selected",
+        today: "Today"
+      },
+      confirmation: {
+        title: "Request Received",
+        message: "Your request has been sent. You will be contacted by email/phone if the stay is confirmed.\n\nBest regards,\nKarl Gjedrem"
+      }
+    }
   },
   de: {
     nav: {
@@ -121,7 +159,26 @@ export const translations = {
       title: "Transport",
       description: "Bushaltestelle direkt am Haus/der Wohnung.",
     },
-  },
+    booking: {
+      title: "Aufenthalt buchen",
+      name: "Name",
+      email: "E-Mail",
+      phone: "Telefon",
+      comment: "Kommentar",
+      submit: "Anfrage senden",
+      required: "Erforderlich",
+      dates: "Daten auswählen",
+      legend: {
+        occupied: "Belegt",
+        selected: "Ausgewählt",
+        today: "Heute"
+      },
+      confirmation: {
+        title: "Anfrage erhalten",
+        message: "Ihre Anfrage wurde gesendet. Sie werden per E-Mail/Telefon kontaktiert, wenn der Aufenthalt bestätigt wird.\n\nMit freundlichen Grüßen,\nKarl Gjedrem"
+      }
+    }
+  }
 };
 
 export type Language = keyof typeof translations;

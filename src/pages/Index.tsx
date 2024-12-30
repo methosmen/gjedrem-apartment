@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
-import { useLanguage } from "@/hooks/useLanguage";
 import { useTheme } from "@/hooks/useTheme";
 import { PhotoGallery } from "@/components/PhotoGallery";
 import { BookingForm } from "@/components/BookingForm";
@@ -18,9 +17,9 @@ const Index = () => {
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       <PhotoGallery />
-      <BookingForm />
       <InformationSection />
       <LocationSection />
+      <BookingForm />
     </div>
   );
 };
