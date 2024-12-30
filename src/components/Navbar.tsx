@@ -12,12 +12,14 @@ export function Navbar() {
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
+      console.log("Current session:", session); // Debug log
       setIsAdmin(session?.user?.email === 'admin@gjedrem.net');
     };
 
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", event, session); // Debug log
       setIsAdmin(session?.user?.email === 'admin@gjedrem.net');
     });
 
@@ -34,7 +36,6 @@ export function Navbar() {
           {isAdmin && (
             <Button
               variant="ghost"
-              className="hidden md:inline-flex"
               onClick={() => navigate("/admin")}
             >
               Admin
