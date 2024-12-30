@@ -27,7 +27,7 @@ export const BookingForm = () => {
     const { data, error } = await supabase
       .from('bookings')
       .select('start_date, end_date, status')
-      .not('status', 'eq', 'available');  // Fetch dates that are either occupied or requested
+      .in('status', ['occupied', 'requested']); // Fetch both occupied and requested dates
 
     if (error) {
       console.error('Error fetching occupied dates:', error);
@@ -38,10 +38,14 @@ export const BookingForm = () => {
     data.forEach(booking => {
       const start = new Date(booking.start_date);
       const end = new Date(booking.end_date);
+      
+      // Include all dates between start and end
       for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
         dates.push(new Date(d));
       }
     });
+    
+    console.log('Occupied dates:', dates); // Debug log
     setOccupiedDates(dates);
   };
 
