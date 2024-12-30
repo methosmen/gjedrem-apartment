@@ -106,6 +106,9 @@ export const PriceManagement = () => {
                 placeholder="4000"
                 type="number"
               />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                NOK
+              </span>
             </div>
           </div>
           <div className="flex flex-col space-y-2">
@@ -117,6 +120,9 @@ export const PriceManagement = () => {
                 placeholder="800"
                 type="number"
               />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                NOK
+              </span>
             </div>
           </div>
           <div className="flex flex-col space-y-2">
@@ -128,6 +134,9 @@ export const PriceManagement = () => {
                 placeholder="600"
                 type="number"
               />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                NOK
+              </span>
             </div>
           </div>
           <div className="flex flex-col space-y-2">
@@ -139,6 +148,9 @@ export const PriceManagement = () => {
                 placeholder="100"
                 type="number"
               />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                NOK
+              </span>
             </div>
           </div>
         </div>

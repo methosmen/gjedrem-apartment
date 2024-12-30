@@ -2,9 +2,12 @@ import { PhotoCarousel } from "@/components/PhotoCarousel";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const PhotoGallery = () => {
   const { t } = useLanguage();
+  const queryClient = useQueryClient();
 
   const fetchPhotos = async () => {
     const { data: apartmentFiles } = await supabase.storage
@@ -46,6 +49,29 @@ export const PhotoGallery = () => {
     queryKey: ['photos'],
     queryFn: fetchPhotos,
   });
+
+  // Listen for price updates
+  useEffect(() => {
+    const channel = supabase
+      .channel('schema-db-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'prices'
+        },
+        () => {
+          // Invalidate the prices query to trigger a refetch
+          queryClient.invalidateQueries({ queryKey: ['prices'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   return (
     <section className="container mx-auto px-4 pt-24 pb-16">
