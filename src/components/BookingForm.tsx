@@ -26,8 +26,8 @@ export const BookingForm = () => {
   const fetchOccupiedDates = async () => {
     const { data, error } = await supabase
       .from('bookings')
-      .select('start_date, end_date')
-      .in('status', ['occupied', 'requested']);
+      .select('start_date, end_date, status')
+      .not('status', 'eq', 'available');  // Fetch dates that are either occupied or requested
 
     if (error) {
       console.error('Error fetching occupied dates:', error);
