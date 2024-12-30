@@ -81,7 +81,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Sending booking confirmation email to ${email} in ${language}`);
 
-    const res = await fetch("https://api.resend.com/emails", {
+    // Send confirmation email to the customer
+    const customerRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -106,25 +107,55 @@ const handler = async (req: Request): Promise<Response> => {
       }),
     });
 
-    if (!res.ok) {
-      const error = await res.text();
-      console.error("Error sending email:", error);
+    if (!customerRes.ok) {
+      const error = await customerRes.text();
+      console.error("Error sending customer email:", error);
       throw new Error(error);
     }
 
-    const data = await res.json();
+    // Send notification email to the owner
+    const ownerRes = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: fromEmail,
+        to: ["kgjedrem5@gmail.com"],
+        subject: `New Booking Request: ${formattedStartDate} - ${formattedEndDate}`,
+        html: `
+          <h1>New Booking Request</h1>
+          <p>A new booking request has been received:</p>
+          <ul>
+            <li>Name: ${name}</li>
+            <li>Email: ${email}</li>
+            <li>Check-in: ${formattedStartDate}</li>
+            <li>Check-out: ${formattedEndDate}</li>
+            ${phone ? `<li>Phone: ${phone}</li>` : ''}
+            ${comment ? `<li>Comment: ${comment}</li>` : ''}
+          </ul>
+        `,
+      }),
+    });
+
+    if (!ownerRes.ok) {
+      const error = await ownerRes.text();
+      console.error("Error sending owner notification:", error);
+      throw new Error(error);
+    }
+
+    const data = await customerRes.json();
     return new Response(JSON.stringify(data), {
+      status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error: any) {
     console.error("Error in send-booking-email function:", error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 };
 

@@ -50,7 +50,7 @@ export const useBookingSubmission = (onSuccess: () => void) => {
           phone,
           comment,
           language,
-          fromEmail: 'onboarding@resend.dev'
+          fromEmail: 'kgjedrem5@gmail.com'
         }
       });
 
