@@ -1,7 +1,7 @@
 import { LanguageSelector } from "./LanguageSelector";
 import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "./ui/button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import { Auth } from "@supabase/auth-ui-react";
@@ -43,7 +43,9 @@ export function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="text-lg font-semibold">Gjedrem Apartment</div>
+        <Link to="/" className="text-lg font-semibold hover:text-primary transition-colors">
+          Gjedrem Apartment
+        </Link>
         <div className="flex items-center gap-4">
           {isAdmin && (
             <Button
