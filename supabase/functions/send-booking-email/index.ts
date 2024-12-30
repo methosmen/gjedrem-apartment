@@ -16,36 +16,49 @@ interface EmailRequest {
   phone?: string;
   comment?: string;
   language: string;
+  fromEmail: string;
 }
+
+const translations = {
+  no: {
+    subject: "Bestillingsforespørsel mottatt",
+    greeting: "Kjære",
+    message: "Din forespørsel er sendt. Du vil bli kontaktet på e-post/telefon hvis oppholdet blir bekreftet.",
+    checkIn: "Innsjekking",
+    checkOut: "Utsjekking",
+    phone: "Telefon",
+    comment: "Kommentar",
+    regards: "Med vennlig hilsen",
+    signature: "Karl Gjedrem"
+  },
+  gb: {
+    subject: "Booking Request Received",
+    greeting: "Dear",
+    message: "Your request has been sent. You will be contacted by email/phone if the stay is confirmed.",
+    checkIn: "Check-in",
+    checkOut: "Check-out",
+    phone: "Phone",
+    comment: "Comment",
+    regards: "Best regards",
+    signature: "Karl Gjedrem"
+  },
+  de: {
+    subject: "Buchungsanfrage erhalten",
+    greeting: "Sehr geehrte(r)",
+    message: "Ihre Anfrage wurde gesendet. Sie werden per E-Mail/Telefon kontaktiert, wenn der Aufenthalt bestätigt wird.",
+    checkIn: "Check-in",
+    checkOut: "Check-out",
+    phone: "Telefon",
+    comment: "Kommentar",
+    regards: "Mit freundlichen Grüßen",
+    signature: "Karl Gjedrem"
+  }
+};
 
 const dateFormats = {
   no: "dd.MM.yyyy",
   gb: "dd/MM/yyyy",
   de: "dd.MM.yyyy"
-};
-
-const translations = {
-  no: {
-    subject: "Forespørsel mottatt",
-    greeting: "Kjære",
-    message: "Din forespørsel er sendt. Du vil bli kontaktet på e-post/telefon hvis oppholdet blir bekreftet.",
-    regards: "Med vennlig hilsen",
-    signature: "Karl Gjedrem"
-  },
-  gb: {
-    subject: "Request Received",
-    greeting: "Dear",
-    message: "Your request has been sent. You will be contacted by email/phone if the stay is confirmed.",
-    regards: "Best regards",
-    signature: "Karl Gjedrem"
-  },
-  de: {
-    subject: "Anfrage erhalten",
-    greeting: "Sehr geehrte(r)",
-    message: "Ihre Anfrage wurde gesendet. Sie werden per E-Mail/Telefon kontaktiert, wenn der Aufenthalt bestätigt wird.",
-    regards: "Mit freundlichen Grüßen",
-    signature: "Karl Gjedrem"
-  }
 };
 
 const handler = async (req: Request): Promise<Response> => {
@@ -54,15 +67,15 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { startDate, endDate, email, name, phone, comment, language = 'no' }: EmailRequest = await req.json();
+    const { startDate, endDate, email, name, phone, comment, language, fromEmail }: EmailRequest = await req.json();
     
-    const t = translations[language as keyof typeof translations];
-    const dateFormat = dateFormats[language as keyof typeof dateFormats];
+    const t = translations[language as keyof typeof translations] || translations.gb;
+    const dateFormat = dateFormats[language as keyof typeof dateFormats] || dateFormats.gb;
     
     const formattedStartDate = format(new Date(startDate), dateFormat);
     const formattedEndDate = format(new Date(endDate), dateFormat);
 
-    console.log(`Sending booking request email to ${email} in ${language}`);
+    console.log(`Sending booking confirmation email to ${email} in ${language}`);
 
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -71,7 +84,7 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Gjedrem Rentals <onboarding@resend.dev>",
+        from: fromEmail,
         to: [email],
         subject: t.subject,
         html: `
@@ -79,10 +92,10 @@ const handler = async (req: Request): Promise<Response> => {
           <p>${t.greeting} ${name},</p>
           <p>${t.message}</p>
           <ul>
-            <li>Check-in: ${formattedStartDate}</li>
-            <li>Check-out: ${formattedEndDate}</li>
-            ${phone ? `<li>Phone: ${phone}</li>` : ''}
-            ${comment ? `<li>Comment: ${comment}</li>` : ''}
+            <li>${t.checkIn}: ${formattedStartDate}</li>
+            <li>${t.checkOut}: ${formattedEndDate}</li>
+            ${phone ? `<li>${t.phone}: ${phone}</li>` : ''}
+            ${comment ? `<li>${t.comment}: ${comment}</li>` : ''}
           </ul>
           <p>${t.regards},<br>${t.signature}</p>
         `,
