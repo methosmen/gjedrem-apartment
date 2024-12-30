@@ -1,5 +1,5 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { format } from "https://deno.land/x/date_fns@v2.22.1/index.js";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { format } from "https://deno.land/std@0.168.0/datetime/mod.ts";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
@@ -55,10 +55,15 @@ const translations = {
   }
 };
 
-const dateFormats = {
-  no: "dd.MM.yyyy",
-  gb: "dd/MM/yyyy",
-  de: "dd.MM.yyyy"
+const formatDate = (dateString: string, language: string): string => {
+  const date = new Date(dateString);
+  switch (language) {
+    case 'no':
+    case 'de':
+      return format(date, 'dd.MM.yyyy');
+    default:
+      return format(date, 'dd/MM/yyyy');
+  }
 };
 
 const handler = async (req: Request): Promise<Response> => {
@@ -70,10 +75,9 @@ const handler = async (req: Request): Promise<Response> => {
     const { startDate, endDate, email, name, phone, comment, language, fromEmail }: EmailRequest = await req.json();
     
     const t = translations[language as keyof typeof translations] || translations.gb;
-    const dateFormat = dateFormats[language as keyof typeof dateFormats] || dateFormats.gb;
     
-    const formattedStartDate = format(new Date(startDate), dateFormat);
-    const formattedEndDate = format(new Date(endDate), dateFormat);
+    const formattedStartDate = formatDate(startDate, language);
+    const formattedEndDate = formatDate(endDate, language);
 
     console.log(`Sending booking confirmation email to ${email} in ${language}`);
 
