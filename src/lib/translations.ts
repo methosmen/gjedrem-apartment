@@ -5,6 +5,7 @@ export const translations = {
       facilities: "Fasiliteter",
       prices: "Priser",
       distances: "Avstander",
+      location: "Kart",
     },
     info: {
       description: "Kjellerleilighet på 45 m2 som ligger like ved Bjerkreimselva. Leiligheten har to soverom, hver med en enkeltseng. Det er dusjrom og seperat toalett. Hybelkjøkken med kjøleskap og fryser. Utendørs sittegruppe",
@@ -13,6 +14,13 @@ export const translations = {
       title: "Laksefiske i Bjerkreimselva",
       description: "Bjerkreimselva er en av Norges beste lakseelver, kjent for sin høye kvalitet på laksefiske. Elven har en årlig fangst på rundt 4-5 tonn laks og sjøørret.",
       zone: "Leiligheten ligger i Sone 3, et av elvens beste fiskeområder. Her finner du flere kjente høler og strykpartier som gir gode muligheter for fangst.",
+      links: {
+        title: "Nyttige lenker for fiskere:",
+        report: "Fangstrapportering - Bjerkreim Elveeigarlag",
+        flow: "Vannføring og temperatur - NVE",
+        depth: "Dybdekart - Bjerkreim Elveeigarlag",
+        rules: "Fiskeregler - Bjerkreim Elveeigarlag"
+      }
     },
     facilities: {
       tv: "TV",
@@ -74,6 +82,7 @@ export const translations = {
       facilities: "Facilities",
       prices: "Prices",
       distances: "Distances",
+      location: "Map",
     },
     info: {
       description: "Basement apartment of 45 m2 located next to Bjerkreim River. The apartment has two bedrooms, each with a single bed. There is a shower room and separate toilet. Kitchenette with refrigerator and freezer. Outdoor seating area",
@@ -82,6 +91,13 @@ export const translations = {
       title: "Salmon Fishing in Bjerkreim River",
       description: "Bjerkreim River is one of Norway's premier salmon rivers, known for its high-quality salmon fishing. The river has an annual catch of around 4-5 tons of salmon and sea trout.",
       zone: "The apartment is located in Zone 3, one of the river's best fishing areas. Here you'll find several well-known pools and rapids that provide excellent fishing opportunities.",
+      links: {
+        title: "Useful links for anglers:",
+        report: "Catch reporting - Bjerkreim River Owners Association",
+        flow: "Water flow and temperature - NVE",
+        depth: "Depth charts - Bjerkreim River Owners Association",
+        rules: "Fishing rules - Bjerkreim River Owners Association"
+      }
     },
     facilities: {
       tv: "TV",
@@ -143,6 +159,7 @@ export const translations = {
       facilities: "Einrichtungen",
       prices: "Preise",
       distances: "Entfernungen",
+      location: "Karte",
     },
     info: {
       description: "45 m2 große Kellerwohnung am Bjerkreim-Fluss. Die Wohnung verfügt über zwei Schlafzimmer, jeweils mit einem Einzelbett. Es gibt ein Duschbad und eine separate Toilette. Küchenzeile mit Kühlschrank und Gefrierschrank. Sitzgelegenheiten im Freien",
@@ -151,6 +168,13 @@ export const translations = {
       title: "Lachsangeln im Bjerkreim-Fluss",
       description: "Der Bjerkreim-Fluss ist einer der besten Lachsflüsse Norwegens, bekannt für sein hochwertiges Lachsangeln. Der Fluss hat einen jährlichen Fang von etwa 4-5 Tonnen Lachs und Meerforelle.",
       zone: "Die Wohnung befindet sich in Zone 3, einem der besten Angelgebiete des Flusses. Hier finden Sie mehrere bekannte Pools und Stromschnellen, die ausgezeichnete Angelmöglichkeiten bieten.",
+      links: {
+        title: "Nützliche Links für Angler:",
+        report: "Fangreporting - Bjerkreim Flussbesitzerverband",
+        flow: "Wasserführung und Temperatur - NVE",
+        depth: "Tiefenkarten - Bjerkreim Flussbesitzerverband",
+        rules: "Angelregeln - Bjerkreim Flussbesitzerverband"
+      }
     },
     facilities: {
       tv: "TV",

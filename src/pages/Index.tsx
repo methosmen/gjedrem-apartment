@@ -6,6 +6,7 @@ import { BookingForm } from "@/components/BookingForm";
 import { InformationSection } from "@/components/InformationSection";
 import { LocationSection } from "@/components/LocationSection";
 import { FishingSection } from "@/components/FishingSection";
+import { MapSection } from "@/components/MapSection";
 
 const Index = () => {
   const { theme } = useTheme();
@@ -25,6 +26,7 @@ const Index = () => {
         <InformationSection />
       </div>
       <LocationSection />
+      <MapSection />
       <BookingForm />
     </div>
   );
