@@ -22,7 +22,6 @@ import { UserRound } from "lucide-react";
 
 export function Navbar() {
   const navigate = useNavigate();
-  const [isAdmin, setIsAdmin] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showLoginDialog, setShowLoginDialog] = useState(false);
 
@@ -31,7 +30,6 @@ export function Navbar() {
       const { data: { session } } = await supabase.auth.getSession();
       console.log("Current session:", session);
       setIsAuthenticated(!!session);
-      setIsAdmin(session?.user?.email === 'admin@gjedrem.net');
     };
 
     checkAuth();
@@ -39,7 +37,6 @@ export function Navbar() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed:", event, session);
       setIsAuthenticated(!!session);
-      setIsAdmin(session?.user?.email === 'admin@gjedrem.net');
     });
 
     return () => {
@@ -63,11 +60,9 @@ export function Navbar() {
             <DropdownMenuContent align="end" className="w-40">
               {isAuthenticated ? (
                 <>
-                  {isAdmin && (
-                    <DropdownMenuItem onClick={() => navigate("/admin")}>
-                      Admin
-                    </DropdownMenuItem>
-                  )}
+                  <DropdownMenuItem onClick={() => navigate("/admin")}>
+                    Admin
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => supabase.auth.signOut()}>
                     Sign Out
                   </DropdownMenuItem>
