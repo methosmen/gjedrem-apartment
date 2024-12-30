@@ -5,11 +5,15 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { DateRange } from "react-day-picker";
 
 const Admin = () => {
   const { t } = useLanguage();
-  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: new Date(),
+    to: undefined
+  });
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -59,12 +63,14 @@ const Admin = () => {
     }
   };
 
-  const handleDateRangeSelect = async (startDate: Date, endDate: Date) => {
+  const handleDateRangeSelect = async () => {
+    if (!date?.from || !date?.to) return;
+
     try {
       const { error } = await supabase
         .from('bookings')
         .insert([
-          { start_date: startDate, end_date: endDate, status: 'occupied' }
+          { start_date: date.from, end_date: date.to, status: 'occupied' }
         ]);
 
       if (error) throw error;
@@ -138,18 +144,13 @@ const Admin = () => {
             <Calendar
               mode="range"
               selected={date}
-              onSelect={(newDate) => setDate(newDate)}
+              onSelect={setDate}
               className="rounded-md border"
             />
             <Button 
-              onClick={() => {
-                if (date instanceof Date) {
-                  const endDate = new Date(date);
-                  endDate.setDate(endDate.getDate() + 7); // Default to 7-day range
-                  handleDateRangeSelect(date, endDate);
-                }
-              }}
+              onClick={handleDateRangeSelect}
               className="w-full"
+              disabled={!date?.from || !date?.to}
             >
               Set as Occupied
             </Button>
