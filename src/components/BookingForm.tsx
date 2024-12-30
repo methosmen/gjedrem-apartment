@@ -26,8 +26,8 @@ export const BookingForm = () => {
   const fetchOccupiedDates = async () => {
     const { data, error } = await supabase
       .from('bookings')
-      .select('start_date, end_date, status')
-      .or('status.eq.occupied,status.eq.requested');
+      .select('start_date, end_date')
+      .eq('status', 'occupied');
 
     if (error) {
       console.error('Error fetching occupied dates:', error);
@@ -101,6 +101,9 @@ export const BookingForm = () => {
       setEmail("");
       setPhone("");
       setComment("");
+      
+      // Refresh occupied dates after successful booking
+      await fetchOccupiedDates();
     } catch (error: any) {
       console.error('Booking error:', error);
       toast({
@@ -137,8 +140,9 @@ export const BookingForm = () => {
               }}
               modifiersStyles={{
                 occupied: { 
-                  backgroundColor: "var(--destructive)",
-                  color: "var(--destructive-foreground)"
+                  backgroundColor: "#ea384c",
+                  color: "white",
+                  fontWeight: "bold"
                 }
               }}
             />

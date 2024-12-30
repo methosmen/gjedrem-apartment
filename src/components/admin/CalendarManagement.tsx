@@ -56,7 +56,7 @@ export const CalendarManagement = () => {
           { 
             start_date: date.from.toISOString().split('T')[0], 
             end_date: date.to.toISOString().split('T')[0], 
-            status: status 
+            status 
           }
         ]);
 
@@ -108,8 +108,9 @@ export const CalendarManagement = () => {
           }}
           modifiersStyles={{
             occupied: { 
-              backgroundColor: "var(--destructive)",
-              color: "var(--destructive-foreground)"
+              backgroundColor: "#ea384c",
+              color: "white",
+              fontWeight: "bold"
             }
           }}
         />
