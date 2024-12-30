@@ -5,4 +5,4 @@ enabled = true
 url = "https://fpriqrupzrfewpjkxyjp.supabase.co"
 
 [functions.send-booking-email]
-verify_jwt = true
+verify_jwt = false
