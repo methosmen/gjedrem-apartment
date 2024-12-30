@@ -47,35 +47,59 @@ export const PriceManagement = () => {
         <div className="grid gap-4">
           <div className="flex flex-col space-y-2">
             <label>{t("prices.weekly")}</label>
-            <Input
-              value={prices.weekly_price}
-              onChange={handlePriceChange("weekly_price")}
-              placeholder="4000 NOK"
-            />
+            <div className="relative">
+              <Input
+                value={prices.weekly_price}
+                onChange={handlePriceChange("weekly_price")}
+                placeholder="4000"
+                type="number"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                NOK
+              </span>
+            </div>
           </div>
           <div className="flex flex-col space-y-2">
             <label>{t("prices.daily")}</label>
-            <Input
-              value={prices.daily_price}
-              onChange={handlePriceChange("daily_price")}
-              placeholder="800 NOK"
-            />
+            <div className="relative">
+              <Input
+                value={prices.daily_price}
+                onChange={handlePriceChange("daily_price")}
+                placeholder="800"
+                type="number"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                NOK
+              </span>
+            </div>
           </div>
           <div className="flex flex-col space-y-2">
             <label>{t("prices.cleaning")}</label>
-            <Input
-              value={prices.cleaning_price}
-              onChange={handlePriceChange("cleaning_price")}
-              placeholder="600 NOK"
-            />
+            <div className="relative">
+              <Input
+                value={prices.cleaning_price}
+                onChange={handlePriceChange("cleaning_price")}
+                placeholder="600"
+                type="number"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                NOK
+              </span>
+            </div>
           </div>
           <div className="flex flex-col space-y-2">
             <label>{t("prices.bedding")}</label>
-            <Input
-              value={prices.bedding_price}
-              onChange={handlePriceChange("bedding_price")}
-              placeholder="100 NOK"
-            />
+            <div className="relative">
+              <Input
+                value={prices.bedding_price}
+                onChange={handlePriceChange("bedding_price")}
+                placeholder="100"
+                type="number"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                NOK
+              </span>
+            </div>
           </div>
         </div>
         <Button onClick={handleSave} className="w-full">
