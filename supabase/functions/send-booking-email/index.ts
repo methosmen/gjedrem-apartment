@@ -80,7 +80,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Sending booking confirmation email to ${email} in ${language}`);
 
-    // Send confirmation email to the customer (temporarily sending to verified email)
+    // Send confirmation email to the customer
     const customerRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -88,9 +88,8 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Gjedrem Apartment <onboarding@resend.dev>",
-        to: ["morten@gjedrem.net"], // Temporarily send to verified email
-        reply_to: email, // Add customer's email as reply-to
+        from: "Gjedrem Apartment <booking@gjedremapartment.com>",
+        to: [email],
         subject: t.subject,
         html: `
           <h1>${t.subject}</h1>
@@ -103,7 +102,6 @@ const handler = async (req: Request): Promise<Response> => {
             ${comment ? `<li>${t.comment}: ${comment}</li>` : ''}
           </ul>
           <p>${t.regards},<br>${t.signature}</p>
-          <p>Customer Email: ${email}</p>
         `,
       }),
     });
@@ -114,7 +112,7 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error(error);
     }
 
-    // Send notification email to the owner (using verified email)
+    // Send notification email to the owner
     const ownerRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -122,8 +120,8 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Gjedrem Apartment <onboarding@resend.dev>",
-        to: ["morten@gjedrem.net"],
+        from: "Gjedrem Apartment <booking@gjedremapartment.com>",
+        to: ["kgjedrem5@gmail.com"],
         subject: `New Booking Request: ${formattedStartDate} - ${formattedEndDate}`,
         html: `
           <h1>New Booking Request</h1>
