@@ -5,8 +5,8 @@ import { useTheme } from "@/hooks/useTheme";
 import Image from "@/components/Image";
 import {
   Tv,
-  Kitchen,
-  Shower,
+  Utensils,
+  ShowerHead,
   Wifi,
   Bath,
   Car,
@@ -24,8 +24,8 @@ const Index = () => {
 
   const facilities = [
     { icon: Tv, label: t("facilities.tv") },
-    { icon: Kitchen, label: t("facilities.kitchen") },
-    { icon: Shower, label: t("facilities.shower") },
+    { icon: Utensils, label: t("facilities.kitchen") },
+    { icon: ShowerHead, label: t("facilities.shower") },
     { icon: Wifi, label: t("facilities.wifi") },
     { icon: Bath, label: t("facilities.towels") },
   ];
