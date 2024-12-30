@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -13,6 +13,36 @@ export const CalendarManagement = () => {
     to: undefined
   });
   const [status, setStatus] = useState<'occupied' | 'available'>('occupied');
+  const [occupiedDates, setOccupiedDates] = useState<Date[]>([]);
+
+  useEffect(() => {
+    fetchOccupiedDates();
+  }, []);
+
+  const fetchOccupiedDates = async () => {
+    const { data, error } = await supabase
+      .from('bookings')
+      .select('start_date, end_date, status')
+      .eq('status', 'occupied');
+
+    if (error) {
+      console.error('Error fetching occupied dates:', error);
+      return;
+    }
+
+    const dates: Date[] = [];
+    data.forEach(booking => {
+      const start = new Date(booking.start_date);
+      const end = new Date(booking.end_date);
+      
+      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+        dates.push(new Date(d));
+      }
+    });
+    
+    console.log('Admin - Occupied dates:', dates);
+    setOccupiedDates(dates);
+  };
 
   const handleDateRangeSelect = async () => {
     if (!date?.from || !date?.to) return;
@@ -34,6 +64,9 @@ export const CalendarManagement = () => {
         title: "Success",
         description: "Date range updated successfully",
       });
+      
+      // Refresh occupied dates after update
+      fetchOccupiedDates();
       
       // Reset selection after successful update
       setDate({
@@ -68,6 +101,15 @@ export const CalendarManagement = () => {
           selected={date}
           onSelect={setDate}
           className="rounded-md border"
+          modifiers={{
+            occupied: occupiedDates
+          }}
+          modifiersStyles={{
+            occupied: { 
+              backgroundColor: "var(--destructive)",
+              color: "var(--destructive-foreground)"
+            }
+          }}
         />
         <Button 
           onClick={handleDateRangeSelect}

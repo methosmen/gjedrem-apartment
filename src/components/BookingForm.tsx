@@ -27,7 +27,7 @@ export const BookingForm = () => {
     const { data, error } = await supabase
       .from('bookings')
       .select('start_date, end_date, status')
-      .in('status', ['occupied', 'requested']); // Fetch both occupied and requested dates
+      .or('status.eq.occupied,status.eq.requested');
 
     if (error) {
       console.error('Error fetching occupied dates:', error);
@@ -45,7 +45,7 @@ export const BookingForm = () => {
       }
     });
     
-    console.log('Occupied dates:', dates); // Debug log
+    console.log('Booking Form - Occupied dates:', dates);
     setOccupiedDates(dates);
   };
 
