@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useTheme } from "@/hooks/useTheme";
-import Image from "@/components/Image";
+import { PhotoCarousel } from "@/components/PhotoCarousel";
 import {
   Tv,
   Utensils,
@@ -30,21 +30,41 @@ const Index = () => {
     { icon: Bath, label: t("facilities.towels") },
   ];
 
+  // Temporary photo data - will be replaced with actual photos from admin uploads
+  const apartmentPhotos = [
+    { src: "/placeholder.svg", alt: "Living Room" },
+    { src: "/placeholder.svg", alt: "Kitchen" },
+    { src: "/placeholder.svg", alt: "Bedroom" },
+  ];
+
+  const surroundingPhotos = [
+    { src: "/placeholder.svg", alt: "Surroundings 1" },
+    { src: "/placeholder.svg", alt: "Surroundings 2" },
+    { src: "/placeholder.svg", alt: "Surroundings 3" },
+  ];
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       
       {/* Hero Section */}
       <section className="pt-16 relative h-[80vh]">
-        <Image
-          src="/placeholder.svg"
-          alt="Apartment exterior"
-          className="w-full h-full object-cover"
+        <PhotoCarousel 
+          photos={[apartmentPhotos[0]]}
+          className="h-full"
         />
-        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-          <h1 className="text-white text-4xl md:text-6xl font-bold">
-            Bjerkreim Apartment
-          </h1>
+      </section>
+
+      {/* Photo Galleries */}
+      <section className="container mx-auto px-4 py-16 space-y-12">
+        <div>
+          <h2 className="text-3xl font-bold mb-6">{t("gallery.apartment")}</h2>
+          <PhotoCarousel photos={apartmentPhotos} />
+        </div>
+        
+        <div>
+          <h2 className="text-3xl font-bold mb-6">{t("gallery.surroundings")}</h2>
+          <PhotoCarousel photos={surroundingPhotos} />
         </div>
       </section>
 
