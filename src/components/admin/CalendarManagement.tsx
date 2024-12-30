@@ -20,9 +20,10 @@ export const CalendarManagement = () => {
   }, []);
 
   const fetchOccupiedDates = async () => {
+    console.log('Fetching occupied dates...');
     const { data, error } = await supabase
       .from('bookings')
-      .select('start_date, end_date, status')
+      .select('start_date, end_date')
       .eq('status', 'occupied');
 
     if (error) {
@@ -48,6 +49,7 @@ export const CalendarManagement = () => {
     if (!date?.from || !date?.to) return;
 
     try {
+      console.log('Inserting booking with status:', status);
       const { error } = await supabase
         .from('bookings')
         .insert([
@@ -66,18 +68,18 @@ export const CalendarManagement = () => {
       });
       
       // Refresh occupied dates after update
-      fetchOccupiedDates();
+      await fetchOccupiedDates();
       
       // Reset selection after successful update
       setDate({
         from: new Date(),
         to: undefined
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating date range:', error);
       toast({
         title: "Error",
-        description: "Failed to update date range",
+        description: error.message || "Failed to update date range",
         variant: "destructive",
       });
     }
