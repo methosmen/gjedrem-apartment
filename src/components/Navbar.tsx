@@ -30,6 +30,9 @@ export function Navbar() {
       const { data: { session } } = await supabase.auth.getSession();
       console.log("Current session:", session);
       setIsAuthenticated(!!session);
+      if (session) {
+        setShowLoginDialog(false);
+      }
     };
 
     checkAuth();
@@ -37,6 +40,9 @@ export function Navbar() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed:", event, session);
       setIsAuthenticated(!!session);
+      if (session) {
+        setShowLoginDialog(false);
+      }
     });
 
     return () => {
