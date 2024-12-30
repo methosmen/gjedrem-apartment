@@ -24,29 +24,45 @@ export const BookingForm = () => {
   }, []);
 
   const fetchOccupiedDates = async () => {
+    // Get all bookings ordered by created_at to get the most recent status for each date
     const { data, error } = await supabase
       .from('bookings')
-      .select('start_date, end_date')
-      .eq('status', 'occupied');
+      .select('start_date, end_date, status, created_at')
+      .order('created_at', { ascending: false });
 
     if (error) {
       console.error('Error fetching occupied dates:', error);
       return;
     }
 
-    const dates: Date[] = [];
+    // Create a map to store the most recent status for each date
+    const dateStatusMap = new Map<string, string>();
+    
     data.forEach(booking => {
       const start = new Date(booking.start_date);
       const end = new Date(booking.end_date);
       
-      // Include all dates between start and end
+      // For each date in the range
       for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-        dates.push(new Date(d));
+        const dateStr = d.toISOString().split('T')[0];
+        // Only set the status if this date hasn't been processed yet
+        // (since we ordered by created_at DESC, this will be the most recent status)
+        if (!dateStatusMap.has(dateStr)) {
+          dateStatusMap.set(dateStr, booking.status);
+        }
+      }
+    });
+
+    // Convert the map to an array of occupied dates
+    const occupiedDatesArray: Date[] = [];
+    dateStatusMap.forEach((status, dateStr) => {
+      if (status === 'occupied') {
+        occupiedDatesArray.push(new Date(dateStr));
       }
     });
     
-    console.log('Booking Form - Occupied dates:', dates);
-    setOccupiedDates(dates);
+    console.log('Booking Form - Occupied dates:', occupiedDatesArray);
+    setOccupiedDates(occupiedDatesArray);
   };
 
   const handleBooking = async () => {
