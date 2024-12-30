@@ -1,6 +1,5 @@
 import { LanguageSelector } from "./LanguageSelector";
 import { ThemeToggle } from "./ThemeToggle";
-import { Button } from "./ui/button";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
@@ -12,6 +11,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "./ui/button";
+import { UserRound } from "lucide-react";
 
 export function Navbar() {
   const navigate = useNavigate();
@@ -47,29 +54,31 @@ export function Navbar() {
           Gjedrem Apartment
         </Link>
         <div className="flex items-center gap-4">
-          {isAdmin && (
-            <Button
-              variant="ghost"
-              onClick={() => navigate("/admin")}
-            >
-              Admin
-            </Button>
-          )}
-          {isAuthenticated ? (
-            <Button 
-              variant="ghost"
-              onClick={() => supabase.auth.signOut()}
-            >
-              Sign Out
-            </Button>
-          ) : (
-            <Button 
-              variant="ghost"
-              onClick={() => setShowLoginDialog(true)}
-            >
-              Sign In
-            </Button>
-          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <UserRound className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-40">
+              {isAuthenticated ? (
+                <>
+                  {isAdmin && (
+                    <DropdownMenuItem onClick={() => navigate("/admin")}>
+                      Admin
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem onClick={() => supabase.auth.signOut()}>
+                    Sign Out
+                  </DropdownMenuItem>
+                </>
+              ) : (
+                <DropdownMenuItem onClick={() => setShowLoginDialog(true)}>
+                  Sign In
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
           <LanguageSelector />
           <ThemeToggle />
         </div>
