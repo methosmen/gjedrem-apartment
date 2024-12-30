@@ -4,22 +4,34 @@ import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
+import { Auth } from "@supabase/auth-ui-react";
+import { ThemeSupa } from "@supabase/auth-ui-shared";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export function Navbar() {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showLoginDialog, setShowLoginDialog] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      console.log("Current session:", session); // Debug log
+      console.log("Current session:", session);
+      setIsAuthenticated(!!session);
       setIsAdmin(session?.user?.email === 'admin@gjedrem.net');
     };
 
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event, session); // Debug log
+      console.log("Auth state changed:", event, session);
+      setIsAuthenticated(!!session);
       setIsAdmin(session?.user?.email === 'admin@gjedrem.net');
     });
 
@@ -41,10 +53,38 @@ export function Navbar() {
               Admin
             </Button>
           )}
+          {isAuthenticated ? (
+            <Button 
+              variant="ghost"
+              onClick={() => supabase.auth.signOut()}
+            >
+              Sign Out
+            </Button>
+          ) : (
+            <Button 
+              variant="ghost"
+              onClick={() => setShowLoginDialog(true)}
+            >
+              Sign In
+            </Button>
+          )}
           <LanguageSelector />
           <ThemeToggle />
         </div>
       </div>
+
+      <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Sign In</DialogTitle>
+          </DialogHeader>
+          <Auth
+            supabaseClient={supabase}
+            appearance={{ theme: ThemeSupa }}
+            theme="light"
+          />
+        </DialogContent>
+      </Dialog>
     </nav>
   );
 }
