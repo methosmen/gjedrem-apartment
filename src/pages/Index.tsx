@@ -7,6 +7,7 @@ import { InformationSection } from "@/components/InformationSection";
 import { LocationSection } from "@/components/LocationSection";
 import { FishingSection } from "@/components/FishingSection";
 import { MapSection } from "@/components/MapSection";
+import { ContactSection } from "@/components/ContactSection";
 
 const Index = () => {
   const { theme } = useTheme();
@@ -28,6 +29,7 @@ const Index = () => {
       <LocationSection />
       <MapSection />
       <BookingForm />
+      <ContactSection />
     </div>
   );
 };
