@@ -7,6 +7,8 @@ import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { DateRange } from "react-day-picker";
+import { Auth } from "@supabase/auth-ui-react";
+import { ThemeSupa } from "@supabase/auth-ui-shared";
 
 const Admin = () => {
   const { t } = useLanguage();
@@ -15,25 +17,47 @@ const Admin = () => {
     to: undefined
   });
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session || session.user.email !== 'admin@gjedrem.net') {
+          navigate('/');
+          toast({
+            title: "Access Denied",
+            description: "You must be logged in as admin to access this panel",
+            variant: "destructive",
+          });
+        } else {
+          setIsAuthenticated(true);
+        }
+      } catch (error) {
+        console.error('Auth error:', error);
         navigate('/');
-        toast({
-          title: "Access Denied",
-          description: "You must be logged in to access the admin panel",
-          variant: "destructive",
-        });
-      } else {
-        setIsAuthenticated(true);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     checkAuth();
+
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!session || session.user.email !== 'admin@gjedrem.net') {
+        navigate('/');
+        setIsAuthenticated(false);
+      } else {
+        setIsAuthenticated(true);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [navigate, toast]);
 
   const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>, type: 'apartment' | 'surroundings') => {
@@ -93,8 +117,23 @@ const Admin = () => {
     }
   };
 
+  if (isLoading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  }
+
   if (!isAuthenticated) {
-    return null;
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="container mx-auto px-4 pt-24 max-w-md">
+          <Auth 
+            supabaseClient={supabase}
+            appearance={{ theme: ThemeSupa }}
+            theme="light"
+          />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -102,7 +141,15 @@ const Admin = () => {
       <Navbar />
       
       <main className="container mx-auto px-4 pt-24">
-        <h1 className="text-3xl font-bold mb-8">Admin Panel</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold">Admin Panel</h1>
+          <Button 
+            variant="outline" 
+            onClick={() => supabase.auth.signOut()}
+          >
+            Sign Out
+          </Button>
+        </div>
         
         <div className="grid md:grid-cols-2 gap-8">
           {/* Photo Management */}
