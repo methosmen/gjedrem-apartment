@@ -70,7 +70,11 @@ const Admin = () => {
       const { error } = await supabase
         .from('bookings')
         .insert([
-          { start_date: date.from, end_date: date.to, status: 'occupied' }
+          { 
+            start_date: date.from.toISOString().split('T')[0], 
+            end_date: date.to.toISOString().split('T')[0], 
+            status: 'occupied' 
+          }
         ]);
 
       if (error) throw error;
