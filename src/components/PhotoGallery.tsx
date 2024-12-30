@@ -50,6 +50,23 @@ export const PhotoGallery = () => {
     queryFn: fetchPhotos,
   });
 
+  const { data: prices } = useQuery({
+    queryKey: ['prices'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('prices')
+        .select('key, value');
+      
+      if (error) throw error;
+      
+      const priceMap: { [key: string]: number } = {};
+      data?.forEach(({ key, value }) => {
+        priceMap[key] = value;
+      });
+      return priceMap;
+    },
+  });
+
   // Listen for price updates
   useEffect(() => {
     const channel = supabase
@@ -71,25 +88,53 @@ export const PhotoGallery = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [queryClient]);
 
   return (
     <section className="container mx-auto px-4 pt-24 pb-16">
-      <div className="grid md:grid-cols-2 gap-8">
-        <div>
-          <h2 className="text-3xl font-bold mb-6">{t("gallery.apartment")}</h2>
-          <PhotoCarousel 
-            photos={photos.apartmentPhotos} 
-            className="max-w-xl mx-auto"
-          />
+      <div className="grid gap-8">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold mb-4">{t("prices.title")}</h2>
+          <div className="grid gap-4 max-w-md mx-auto">
+            {prices && (
+              <>
+                <div className="flex justify-between items-center">
+                  <span>{t("prices.weekly")}</span>
+                  <span className="font-bold">{prices.weekly_price} NOK</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>{t("prices.daily")}</span>
+                  <span className="font-bold">{prices.daily_price} NOK</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>{t("prices.cleaning")}</span>
+                  <span className="font-bold">{prices.cleaning_price} NOK</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>{t("prices.bedding")}</span>
+                  <span className="font-bold">{prices.bedding_price} NOK</span>
+                </div>
+              </>
+            )}
+          </div>
         </div>
-        
-        <div>
-          <h2 className="text-3xl font-bold mb-6">{t("gallery.surroundings")}</h2>
-          <PhotoCarousel 
-            photos={photos.surroundingPhotos}
-            className="max-w-xl mx-auto"
-          />
+
+        <div className="grid md:grid-cols-2 gap-8">
+          <div>
+            <h2 className="text-3xl font-bold mb-6">{t("gallery.apartment")}</h2>
+            <PhotoCarousel 
+              photos={photos.apartmentPhotos} 
+              className="max-w-xl mx-auto"
+            />
+          </div>
+          
+          <div>
+            <h2 className="text-3xl font-bold mb-6">{t("gallery.surroundings")}</h2>
+            <PhotoCarousel 
+              photos={photos.surroundingPhotos}
+              className="max-w-xl mx-auto"
+            />
+          </div>
         </div>
       </div>
     </section>
