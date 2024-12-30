@@ -31,6 +31,10 @@ export const translations = {
       egersund: "22 km til Egersund",
       stavanger: "60 km til Stavanger",
     },
+    gallery: {
+      apartment: "Leiligheten",
+      surroundings: "Omgivelser",
+    },
     parking: {
       title: "Parkering",
       description: "Gratis parkering for gjester",
@@ -91,6 +95,10 @@ export const translations = {
       egersund: "22 km to Egersund",
       stavanger: "60 km to Stavanger",
     },
+    gallery: {
+      apartment: "Apartment",
+      surroundings: "Surroundings",
+    },
     parking: {
       title: "Parking",
       description: "Free parking for guests",
@@ -150,6 +158,10 @@ export const translations = {
       store: "3 km zum Geschäft",
       egersund: "22 km nach Egersund",
       stavanger: "60 km nach Stavanger",
+    },
+    gallery: {
+      apartment: "Wohnung",
+      surroundings: "Umgebung",
     },
     parking: {
       title: "Parken",
