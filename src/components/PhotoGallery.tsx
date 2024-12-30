@@ -91,9 +91,27 @@ export const PhotoGallery = () => {
   }, [queryClient]);
 
   return (
-    <section className="container mx-auto px-4 pt-24 pb-16">
+    <section className="container mx-auto px-4 py-16">
       <div className="grid gap-8">
-        <div className="text-center">
+        <div className="grid md:grid-cols-2 gap-8">
+          <div>
+            <h2 className="text-3xl font-bold mb-6">{t("gallery.apartment")}</h2>
+            <PhotoCarousel 
+              photos={photos.apartmentPhotos} 
+              className="max-w-xl mx-auto"
+            />
+          </div>
+          
+          <div>
+            <h2 className="text-3xl font-bold mb-6">{t("gallery.surroundings")}</h2>
+            <PhotoCarousel 
+              photos={photos.surroundingPhotos}
+              className="max-w-xl mx-auto"
+            />
+          </div>
+        </div>
+
+        <div className="text-center mt-8">
           <h2 className="text-3xl font-bold mb-4">{t("prices.title")}</h2>
           <div className="grid gap-4 max-w-md mx-auto">
             {prices && (
@@ -116,24 +134,6 @@ export const PhotoGallery = () => {
                 </div>
               </>
             )}
-          </div>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-8">
-          <div>
-            <h2 className="text-3xl font-bold mb-6">{t("gallery.apartment")}</h2>
-            <PhotoCarousel 
-              photos={photos.apartmentPhotos} 
-              className="max-w-xl mx-auto"
-            />
-          </div>
-          
-          <div>
-            <h2 className="text-3xl font-bold mb-6">{t("gallery.surroundings")}</h2>
-            <PhotoCarousel 
-              photos={photos.surroundingPhotos}
-              className="max-w-xl mx-auto"
-            />
           </div>
         </div>
       </div>
