@@ -31,7 +31,7 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Gjedrem Rentals <booking@gjedrem.net>",
+        from: "Gjedrem Rentals <onboarding@resend.dev>", // Using Resend's default domain
         to: [email],
         subject: "Booking Confirmation",
         html: `

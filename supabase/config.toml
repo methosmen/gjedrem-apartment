@@ -1,5 +1,4 @@
 project_id = "fpriqrupzrfewpjkxyjp"
-
 [api]
 enabled = true
 url = "https://fpriqrupzrfewpjkxyjp.supabase.co"
