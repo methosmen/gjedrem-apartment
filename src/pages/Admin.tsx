@@ -21,16 +21,34 @@ const Admin = () => {
     const checkAuth = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
-        if (!session || session.user.email !== 'admin@gjedrem.net') {
+        if (!session) {
           navigate('/');
           toast({
             title: "Access Denied",
-            description: "You must be logged in as admin to access this panel",
+            description: "You must be logged in to access this panel",
             variant: "destructive",
           });
-        } else {
-          setIsAuthenticated(true);
+          return;
         }
+
+        // Check if user has admin privileges in profiles table
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('is_admin')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profileError || !profile?.is_admin) {
+          navigate('/');
+          toast({
+            title: "Access Denied",
+            description: "You must have admin privileges to access this panel",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        setIsAuthenticated(true);
       } catch (error) {
         console.error('Auth error:', error);
         navigate('/');
@@ -42,7 +60,20 @@ const Admin = () => {
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!session || session.user.email !== 'admin@gjedrem.net') {
+      if (!session) {
+        navigate('/');
+        setIsAuthenticated(false);
+        return;
+      }
+
+      // Check admin status when auth state changes
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('is_admin')
+        .eq('id', session.user.id)
+        .single();
+
+      if (!profile?.is_admin) {
         navigate('/');
         setIsAuthenticated(false);
       } else {
@@ -68,6 +99,9 @@ const Admin = () => {
             supabaseClient={supabase}
             appearance={{ theme: ThemeSupa }}
             theme="light"
+            providers={[]}
+            view="sign_in"
+            showLinks={false}
           />
         </div>
       </div>
