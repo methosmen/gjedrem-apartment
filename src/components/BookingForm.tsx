@@ -121,9 +121,12 @@ export const BookingForm = () => {
               selected={date}
               onSelect={setDate}
               className="rounded-md border bg-background"
-              disabled={{
-                before: new Date(),
-                dates: occupiedDates
+              disabled={(date: Date) => {
+                return date < new Date() || occupiedDates.some(occupiedDate => 
+                  occupiedDate.getFullYear() === date.getFullYear() &&
+                  occupiedDate.getMonth() === date.getMonth() &&
+                  occupiedDate.getDate() === date.getDate()
+                );
               }}
               modifiers={{
                 occupied: occupiedDates
