@@ -93,6 +93,9 @@ export function Navbar() {
             supabaseClient={supabase}
             appearance={{ theme: ThemeSupa }}
             theme="light"
+            providers={[]}
+            view="sign_in"
+            showLinks={false}
           />
         </DialogContent>
       </Dialog>
