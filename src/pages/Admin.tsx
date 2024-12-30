@@ -9,6 +9,7 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { Button } from "@/components/ui/button";
 import { PhotoManagement } from "@/components/admin/PhotoManagement";
 import { CalendarManagement } from "@/components/admin/CalendarManagement";
+import { PriceManagement } from "@/components/admin/PriceManagement";
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -87,9 +88,12 @@ const Admin = () => {
           </Button>
         </div>
         
-        <div className="grid md:grid-cols-2 gap-8">
-          <PhotoManagement />
-          <CalendarManagement />
+        <div className="grid gap-8">
+          <div className="grid md:grid-cols-2 gap-8">
+            <PhotoManagement />
+            <CalendarManagement />
+          </div>
+          <PriceManagement />
         </div>
       </main>
     </div>
