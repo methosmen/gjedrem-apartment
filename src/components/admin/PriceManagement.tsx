@@ -26,7 +26,7 @@ export const PriceManagement = () => {
         .select("key, value");
       
       if (error) throw error;
-      return data;
+      return data || [];
     },
   });
 
@@ -46,7 +46,7 @@ export const PriceManagement = () => {
   });
 
   useEffect(() => {
-    if (pricesData) {
+    if (Array.isArray(pricesData) && pricesData.length > 0) {
       const priceObj: { [key: string]: string } = {};
       pricesData.forEach(({ key, value }) => {
         priceObj[key] = value.toString();
