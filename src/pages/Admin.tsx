@@ -24,8 +24,8 @@ const Admin = () => {
         if (!session) {
           navigate('/');
           toast({
-            title: "Access Denied",
-            description: "You must be logged in to access this panel",
+            title: "Ingen tilgang",
+            description: "Du må være logget inn for å få tilgang til dette panelet",
             variant: "destructive",
           });
           return;
@@ -41,8 +41,8 @@ const Admin = () => {
         if (profileError || !profile?.is_admin) {
           navigate('/');
           toast({
-            title: "Access Denied",
-            description: "You must have admin privileges to access this panel",
+            title: "Ingen tilgang",
+            description: "Du må ha administratorrettigheter for å få tilgang til dette panelet",
             variant: "destructive",
           });
           return;
@@ -87,7 +87,7 @@ const Admin = () => {
   }, [navigate, toast]);
 
   if (isLoading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    return <div className="flex items-center justify-center min-h-screen">Laster...</div>;
   }
 
   if (!isAuthenticated) {
@@ -113,12 +113,12 @@ const Admin = () => {
       <Navbar />
       <main className="container mx-auto px-4 pt-24">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">Admin Panel</h1>
+          <h1 className="text-3xl font-bold">Administrasjonspanel</h1>
           <Button 
             variant="outline" 
             onClick={() => supabase.auth.signOut()}
           >
-            Sign Out
+            Logg ut
           </Button>
         </div>
         

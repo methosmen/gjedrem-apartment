@@ -17,7 +17,6 @@ export const PriceManagement = () => {
     bedding_price: "",
   });
 
-  // Fetch prices from Supabase
   const { data: pricesData, isLoading } = useQuery({
     queryKey: ["prices"],
     queryFn: async () => {
@@ -30,7 +29,6 @@ export const PriceManagement = () => {
     },
   });
 
-  // Update prices mutation
   const updatePriceMutation = useMutation({
     mutationFn: async ({ key, value }: { key: string; value: number }) => {
       const { error } = await supabase
@@ -64,7 +62,6 @@ export const PriceManagement = () => {
 
   const handleSave = async () => {
     try {
-      // Update each price in sequence
       for (const [key, value] of Object.entries(prices)) {
         await updatePriceMutation.mutateAsync({
           key,
@@ -73,32 +70,32 @@ export const PriceManagement = () => {
       }
       
       toast({
-        title: "Success",
-        description: "Prices updated successfully",
+        title: "Suksess",
+        description: "Priser oppdatert",
       });
     } catch (error) {
-      console.error("Error updating prices:", error);
+      console.error("Feil ved oppdatering av priser:", error);
       toast({
-        title: "Error",
-        description: "Failed to update prices",
+        title: "Feil",
+        description: "Kunne ikke oppdatere priser",
         variant: "destructive",
       });
     }
   };
 
   if (isLoading) {
-    return <div>Loading prices...</div>;
+    return <div>Laster priser...</div>;
   }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t("nav.prices")}</CardTitle>
+        <CardTitle>Priser</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid gap-4">
           <div className="flex flex-col space-y-2">
-            <label>{t("prices.weekly")}</label>
+            <label>Ukeleie</label>
             <div className="relative">
               <Input
                 value={prices.weekly_price}
@@ -112,7 +109,7 @@ export const PriceManagement = () => {
             </div>
           </div>
           <div className="flex flex-col space-y-2">
-            <label>{t("prices.daily")}</label>
+            <label>Døgnpris</label>
             <div className="relative">
               <Input
                 value={prices.daily_price}
@@ -126,7 +123,7 @@ export const PriceManagement = () => {
             </div>
           </div>
           <div className="flex flex-col space-y-2">
-            <label>{t("prices.cleaning")}</label>
+            <label>Utvask</label>
             <div className="relative">
               <Input
                 value={prices.cleaning_price}
@@ -140,7 +137,7 @@ export const PriceManagement = () => {
             </div>
           </div>
           <div className="flex flex-col space-y-2">
-            <label>{t("prices.bedding")}</label>
+            <label>Sengetøy & håndduker (per pers. per opphold)</label>
             <div className="relative">
               <Input
                 value={prices.bedding_price}
@@ -155,7 +152,7 @@ export const PriceManagement = () => {
           </div>
         </div>
         <Button onClick={handleSave} className="w-full">
-          Save Changes
+          Lagre endringer
         </Button>
       </CardContent>
     </Card>

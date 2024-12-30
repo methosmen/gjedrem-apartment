@@ -78,14 +78,14 @@ export const PhotoManagement = () => {
       await queryClient.invalidateQueries({ queryKey: ['photos'] });
 
       toast({
-        title: "Success",
-        description: "Photo uploaded successfully",
+        title: "Suksess",
+        description: "Bilde lastet opp",
       });
     } catch (error) {
       console.error('Error uploading photo:', error);
       toast({
-        title: "Error",
-        description: "Failed to upload photo",
+        title: "Feil",
+        description: "Kunne ikke laste opp bilde",
         variant: "destructive",
       });
     }
@@ -103,31 +103,31 @@ export const PhotoManagement = () => {
       await queryClient.invalidateQueries({ queryKey: ['photos'] });
 
       toast({
-        title: "Success",
-        description: "Photo deleted successfully",
+        title: "Suksess",
+        description: "Bilde slettet",
       });
     } catch (error) {
       console.error('Error deleting photo:', error);
       toast({
-        title: "Error",
-        description: "Failed to delete photo",
+        title: "Feil",
+        description: "Kunne ikke slette bilde",
         variant: "destructive",
       });
     }
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>Laster...</div>;
   }
 
   return (
     <section className="space-y-4">
-      <h2 className="text-2xl font-semibold">Photo Management</h2>
+      <h2 className="text-2xl font-semibold">Bildebehandling</h2>
       
       <div className="space-y-8">
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium">Apartment Photos</h3>
+            <h3 className="text-lg font-medium">Leilighetsbilder</h3>
             <input
               type="file"
               accept="image/*"
@@ -137,7 +137,7 @@ export const PhotoManagement = () => {
             />
             <label htmlFor="apartment-photo-upload">
               <Button variant="outline" className="cursor-pointer" asChild>
-                <span>Upload Apartment Photo</span>
+                <span>Last opp leilighetsbilde</span>
               </Button>
             </label>
           </div>
@@ -162,17 +162,17 @@ export const PhotoManagement = () => {
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Delete Photo</AlertDialogTitle>
+                      <AlertDialogTitle>Slett bilde</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Are you sure you want to delete this photo? This action cannot be undone.
+                        Er du sikker på at du vil slette dette bildet? Dette kan ikke angres.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogCancel>Avbryt</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() => handlePhotoDelete(photo.path)}
                       >
-                        Delete
+                        Slett
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
@@ -184,7 +184,7 @@ export const PhotoManagement = () => {
 
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium">Surroundings Photos</h3>
+            <h3 className="text-lg font-medium">Omgivelsesbilder</h3>
             <input
               type="file"
               accept="image/*"
@@ -194,7 +194,7 @@ export const PhotoManagement = () => {
             />
             <label htmlFor="surroundings-photo-upload">
               <Button variant="outline" className="cursor-pointer" asChild>
-                <span>Upload Surroundings Photo</span>
+                <span>Last opp omgivelsesbilde</span>
               </Button>
             </label>
           </div>
@@ -219,17 +219,17 @@ export const PhotoManagement = () => {
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Delete Photo</AlertDialogTitle>
+                      <AlertDialogTitle>Slett bilde</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Are you sure you want to delete this photo? This action cannot be undone.
+                        Er du sikker på at du vil slette dette bildet? Dette kan ikke angres.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogCancel>Avbryt</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() => handlePhotoDelete(photo.path)}
                       >
-                        Delete
+                        Slett
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
