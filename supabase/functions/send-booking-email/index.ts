@@ -16,7 +16,6 @@ interface EmailRequest {
   phone?: string;
   comment?: string;
   language: string;
-  fromEmail: string;
 }
 
 const translations = {
@@ -81,7 +80,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Sending booking confirmation email to ${email} in ${language}`);
 
-    // Send confirmation email to the customer
+    // Send confirmation email to the customer (temporarily sending to verified email)
     const customerRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -90,7 +89,8 @@ const handler = async (req: Request): Promise<Response> => {
       },
       body: JSON.stringify({
         from: "Gjedrem Apartment <onboarding@resend.dev>",
-        to: [email],
+        to: ["morten@gjedrem.net"], // Temporarily send to verified email
+        reply_to: email, // Add customer's email as reply-to
         subject: t.subject,
         html: `
           <h1>${t.subject}</h1>
@@ -103,6 +103,7 @@ const handler = async (req: Request): Promise<Response> => {
             ${comment ? `<li>${t.comment}: ${comment}</li>` : ''}
           </ul>
           <p>${t.regards},<br>${t.signature}</p>
+          <p>Customer Email: ${email}</p>
         `,
       }),
     });
@@ -113,7 +114,7 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error(error);
     }
 
-    // Send notification email to the owner
+    // Send notification email to the owner (using verified email)
     const ownerRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -122,7 +123,7 @@ const handler = async (req: Request): Promise<Response> => {
       },
       body: JSON.stringify({
         from: "Gjedrem Apartment <onboarding@resend.dev>",
-        to: ["kgjedrem5@gmail.com"],
+        to: ["morten@gjedrem.net"],
         subject: `New Booking Request: ${formattedStartDate} - ${formattedEndDate}`,
         html: `
           <h1>New Booking Request</h1>
