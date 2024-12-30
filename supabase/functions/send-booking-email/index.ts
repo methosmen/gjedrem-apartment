@@ -72,7 +72,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { startDate, endDate, email, name, phone, comment, language, fromEmail }: EmailRequest = await req.json();
+    const { startDate, endDate, email, name, phone, comment, language }: EmailRequest = await req.json();
     
     const t = translations[language as keyof typeof translations] || translations.gb;
     
@@ -89,7 +89,7 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: fromEmail,
+        from: "Gjedrem Apartment <onboarding@resend.dev>",
         to: [email],
         subject: t.subject,
         html: `
@@ -121,7 +121,7 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: fromEmail,
+        from: "Gjedrem Apartment <onboarding@resend.dev>",
         to: ["kgjedrem5@gmail.com"],
         subject: `New Booking Request: ${formattedStartDate} - ${formattedEndDate}`,
         html: `
