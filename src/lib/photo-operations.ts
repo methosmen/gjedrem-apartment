@@ -25,7 +25,7 @@ export const deletePhoto = async (photoUrl: string): Promise<boolean> => {
     console.log('Attempting to delete file:', filePath);
 
     // Delete the file
-    const { error: deleteError, data } = await supabase
+    const { error: deleteError } = await supabase
       .storage
       .from('photos')
       .remove([filePath]);
@@ -40,14 +40,11 @@ export const deletePhoto = async (photoUrl: string): Promise<boolean> => {
       return false;
     }
 
-    console.log('Photo deleted successfully:', filePath, 'Response:', data);
+    console.log('Photo deleted successfully:', filePath);
     toast({
       title: "Suksess",
       description: "Bilde slettet",
     });
-    
-    // Add a delay to ensure Supabase has processed the deletion
-    await new Promise(resolve => setTimeout(resolve, 1000));
     
     return true;
   } catch (error) {
