@@ -1,74 +1,138 @@
-import { supabase } from "@/lib/supabase";
+import { supabase } from "./supabase";
+import { toast } from "@/hooks/use-toast";
 
-export async function deletePhoto(path: string) {
-  console.log('Starting photo deletion for path:', path);
-  
+export const deletePhoto = async (photoUrl: string): Promise<boolean> => {
   try {
-    const [folder, filename] = path.split('/');
+    console.log('Starting photo deletion for:', photoUrl);
     
-    if (!folder || !filename) {
-      throw new Error('Invalid file path format');
+    // Extract the file path from the URL
+    const path = photoUrl.split('/').pop();
+    if (!path) {
+      console.error('Invalid photo URL:', photoUrl);
+      toast({
+        title: "Feil",
+        description: "Ugyldig bilde-URL",
+        variant: "destructive",
+      });
+      return false;
     }
-    
-    console.log('Checking if file exists in folder:', folder);
-    
-    // First verify the file exists
-    const { data: files, error: listError } = await supabase.storage
+
+    // First, check if the file exists
+    const { data: fileExists, error: checkError } = await supabase
+      .storage
       .from('photos')
-      .list(folder);
-      
-    if (listError) {
-      console.error('Error listing files:', listError);
-      throw listError;
+      .list('', {
+        search: path
+      });
+
+    if (checkError) {
+      console.error('Error checking file existence:', checkError);
+      toast({
+        title: "Feil",
+        description: "Kunne ikke verifisere bildefil",
+        variant: "destructive",
+      });
+      return false;
     }
 
-    const fileExists = files?.some(file => file.name === filename);
-    console.log('File exists?', fileExists);
-    
-    if (!fileExists) {
-      throw new Error('File not found in storage');
+    if (!fileExists.length) {
+      console.error('File not found:', path);
+      toast({
+        title: "Feil",
+        description: "Bildefil ikke funnet",
+        variant: "destructive",
+      });
+      return false;
     }
 
-    // Attempt to delete the file
-    const { error: deleteError } = await supabase.storage
+    // Delete the file
+    const { error: deleteError } = await supabase
+      .storage
       .from('photos')
       .remove([path]);
 
     if (deleteError) {
       console.error('Error deleting file:', deleteError);
-      throw deleteError;
+      toast({
+        title: "Feil",
+        description: "Kunne ikke slette bildefil",
+        variant: "destructive",
+      });
+      return false;
     }
 
-    console.log('File successfully deleted');
-    return { success: true };
+    console.log('Photo deleted successfully:', path);
+    toast({
+      title: "Suksess",
+      description: "Bilde slettet",
+    });
+    
+    // Add a delay to ensure Supabase has processed the deletion
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    return true;
   } catch (error) {
-    console.error('Error in deletePhoto:', error);
-    throw error;
+    console.error('Unexpected error during photo deletion:', error);
+    toast({
+      title: "Feil",
+      description: "En uventet feil oppstod under sletting av bilde",
+      variant: "destructive",
+    });
+    return false;
   }
-}
+};
 
-export async function uploadPhoto(file: File, type: 'apartment' | 'surroundings') {
+export const uploadPhoto = async (file: File): Promise<string | null> => {
   try {
-    console.log('Starting upload for file:', file.name, 'to folder:', type);
+    console.log('Starting photo upload for:', file.name);
     
     const fileExt = file.name.split('.').pop();
-    const fileName = `${type}/${Math.random()}.${fileExt}`;
+    const fileName = `${Math.random()}.${fileExt}`;
 
-    console.log('Generated filename:', fileName);
-
-    const { error: uploadError, data } = await supabase.storage
+    const { error: uploadError, data } = await supabase
+      .storage
       .from('photos')
       .upload(fileName, file);
 
     if (uploadError) {
-      console.error('Upload error:', uploadError);
-      throw uploadError;
+      console.error('Error uploading file:', uploadError);
+      toast({
+        title: "Feil",
+        description: "Kunne ikke laste opp bilde",
+        variant: "destructive",
+      });
+      return null;
     }
 
-    console.log('Upload successful:', data);
-    return { success: true, path: fileName };
+    if (!data?.path) {
+      console.error('No path returned from upload');
+      toast({
+        title: "Feil",
+        description: "Ingen sti returnert fra opplasting",
+        variant: "destructive",
+      });
+      return null;
+    }
+
+    const { data: { publicUrl } } = supabase
+      .storage
+      .from('photos')
+      .getPublicUrl(data.path);
+
+    console.log('Photo uploaded successfully:', publicUrl);
+    toast({
+      title: "Suksess",
+      description: "Bilde lastet opp",
+    });
+
+    return publicUrl;
   } catch (error) {
-    console.error('Error in uploadPhoto:', error);
-    throw error;
+    console.error('Unexpected error during photo upload:', error);
+    toast({
+      title: "Feil",
+      description: "En uventet feil oppstod under opplasting av bilde",
+      variant: "destructive",
+    });
+    return null;
   }
-}
+};

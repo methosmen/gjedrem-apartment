@@ -1,73 +1,82 @@
-import { Button } from "@/components/ui/button";
-import Image from "@/components/Image";
-import { PhotoDeleteDialog } from "./PhotoDeleteDialog";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { deletePhoto } from "@/lib/photo-operations";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface PhotoSectionProps {
-  title: string;
-  photos: Array<{ src: string; alt: string; path: string }>;
-  onUpload: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
-  onDelete: (path: string) => Promise<void>;
-  type: 'apartment' | 'surroundings';
+  photos: string[];
+  onPhotoDeleted: () => void;
 }
 
-export const PhotoSection = ({ title, photos, onUpload, onDelete, type }: PhotoSectionProps) => {
-  const [isUploading, setIsUploading] = useState(false);
+export const PhotoSection = ({ photos, onPhotoDeleted }: PhotoSectionProps) => {
+  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDeleteConfirm = async () => {
+    if (!selectedPhoto) return;
+    
+    setIsDeleting(true);
     try {
-      setIsUploading(true);
-      await onUpload(e);
-      // Reset input value after upload
-      e.target.value = '';
-    } catch (error) {
-      console.error('Error in upload handler:', error);
+      const success = await deletePhoto(selectedPhoto);
+      if (success) {
+        onPhotoDeleted();
+      }
     } finally {
-      setIsUploading(false);
+      setIsDeleting(false);
+      setSelectedPhoto(null);
     }
   };
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-medium">{title}</h3>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleUpload}
-          className="hidden"
-          id={`${type}-photo-upload`}
-          disabled={isUploading}
-        />
-        <label htmlFor={`${type}-photo-upload`}>
-          <Button 
-            variant="outline" 
-            className="cursor-pointer" 
-            asChild
-            disabled={isUploading}
-          >
-            <span>
-              {isUploading 
-                ? 'Laster opp...' 
-                : `Last opp ${type === 'apartment' ? 'leilighetsbilde' : 'omgivelsesbilde'}`
-              }
-            </span>
-          </Button>
-        </label>
-      </div>
-      
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {photos.map((photo, index) => (
-          <div key={index} className="relative group">
-            <Image
-              src={photo.src}
-              alt={photo.alt}
-              className="w-full h-32 object-cover rounded-lg"
-            />
-            <PhotoDeleteDialog onConfirmDelete={() => onDelete(photo.path)} />
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      {photos.map((photo) => (
+        <div key={photo} className="relative group">
+          <img
+            src={photo}
+            alt="Uploaded content"
+            className="w-full h-48 object-cover rounded-lg"
+          />
+          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 flex items-center justify-center">
+            <Button
+              variant="destructive"
+              size="sm"
+              className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              onClick={() => setSelectedPhoto(photo)}
+            >
+              Slett
+            </Button>
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
+
+      <AlertDialog open={!!selectedPhoto} onOpenChange={() => setSelectedPhoto(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Er du sikker?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Dette vil permanent slette bildet fra galleriet.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Avbryt</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Sletter..." : "Slett"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
