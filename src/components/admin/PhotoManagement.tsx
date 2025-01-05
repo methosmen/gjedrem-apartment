@@ -1,20 +1,7 @@
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Trash2 } from "lucide-react";
-import Image from "@/components/Image";
+import { PhotoSection } from "./PhotoSection";
 
 export const PhotoManagement = () => {
   const { toast } = useToast();
@@ -99,6 +86,9 @@ export const PhotoManagement = () => {
 
       if (error) throw error;
 
+      // Vent litt før vi oppdaterer visningen for å gi Supabase tid til å fullføre slettingen
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       await queryClient.invalidateQueries({ queryKey: ['admin-photos'] });
       await queryClient.invalidateQueries({ queryKey: ['photos'] });
 
@@ -125,119 +115,21 @@ export const PhotoManagement = () => {
       <h2 className="text-2xl font-semibold">Bildebehandling</h2>
       
       <div className="space-y-8">
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium">Leilighetsbilder</h3>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => handlePhotoUpload(e, 'apartment')}
-              className="hidden"
-              id="apartment-photo-upload"
-            />
-            <label htmlFor="apartment-photo-upload">
-              <Button variant="outline" className="cursor-pointer" asChild>
-                <span>Last opp leilighetsbilde</span>
-              </Button>
-            </label>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {photos.apartmentPhotos.map((photo, index) => (
-              <div key={index} className="relative group">
-                <Image
-                  src={photo.src}
-                  alt={photo.alt}
-                  className="w-full h-32 object-cover rounded-lg"
-                />
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Slett bilde</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Er du sikker på at du vil slette dette bildet? Dette kan ikke angres.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Avbryt</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => handlePhotoDelete(photo.path)}
-                      >
-                        Slett
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
-            ))}
-          </div>
-        </div>
+        <PhotoSection
+          title="Leilighetsbilder"
+          photos={photos.apartmentPhotos}
+          onUpload={(e) => handlePhotoUpload(e, 'apartment')}
+          onDelete={handlePhotoDelete}
+          type="apartment"
+        />
 
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium">Omgivelsesbilder</h3>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => handlePhotoUpload(e, 'surroundings')}
-              className="hidden"
-              id="surroundings-photo-upload"
-            />
-            <label htmlFor="surroundings-photo-upload">
-              <Button variant="outline" className="cursor-pointer" asChild>
-                <span>Last opp omgivelsesbilde</span>
-              </Button>
-            </label>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {photos.surroundingPhotos.map((photo, index) => (
-              <div key={index} className="relative group">
-                <Image
-                  src={photo.src}
-                  alt={photo.alt}
-                  className="w-full h-32 object-cover rounded-lg"
-                />
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Slett bilde</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Er du sikker på at du vil slette dette bildet? Dette kan ikke angres.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Avbryt</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => handlePhotoDelete(photo.path)}
-                      >
-                        Slett
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
-            ))}
-          </div>
-        </div>
+        <PhotoSection
+          title="Omgivelsesbilder"
+          photos={photos.surroundingPhotos}
+          onUpload={(e) => handlePhotoUpload(e, 'surroundings')}
+          onDelete={handlePhotoDelete}
+          type="surroundings"
+        />
       </div>
     </section>
   );
