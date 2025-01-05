@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import Image from "@/components/Image";
 import { PhotoDeleteDialog } from "./PhotoDeleteDialog";
+import { useState } from "react";
 
 interface PhotoSectionProps {
   title: string;
@@ -11,13 +12,18 @@ interface PhotoSectionProps {
 }
 
 export const PhotoSection = ({ title, photos, onUpload, onDelete, type }: PhotoSectionProps) => {
+  const [isUploading, setIsUploading] = useState(false);
+
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
+      setIsUploading(true);
       await onUpload(e);
       // Reset input value after upload
       e.target.value = '';
     } catch (error) {
       console.error('Error in upload handler:', error);
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -31,10 +37,21 @@ export const PhotoSection = ({ title, photos, onUpload, onDelete, type }: PhotoS
           onChange={handleUpload}
           className="hidden"
           id={`${type}-photo-upload`}
+          disabled={isUploading}
         />
         <label htmlFor={`${type}-photo-upload`}>
-          <Button variant="outline" className="cursor-pointer" asChild>
-            <span>Last opp {type === 'apartment' ? 'leilighetsbilde' : 'omgivelsesbilde'}</span>
+          <Button 
+            variant="outline" 
+            className="cursor-pointer" 
+            asChild
+            disabled={isUploading}
+          >
+            <span>
+              {isUploading 
+                ? 'Laster opp...' 
+                : `Last opp ${type === 'apartment' ? 'leilighetsbilde' : 'omgivelsesbilde'}`
+              }
+            </span>
           </Button>
         </label>
       </div>

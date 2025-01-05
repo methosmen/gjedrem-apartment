@@ -114,6 +114,7 @@ export const PhotoManagement = () => {
       const [folder, filename] = path.split('/');
       console.log('Folder:', folder, 'Filename:', filename);
 
+      // First, verify the file exists
       const { data: files, error: listError } = await supabase.storage
         .from('photos')
         .list(folder);
@@ -131,6 +132,7 @@ export const PhotoManagement = () => {
         throw new Error('File not found');
       }
 
+      // Attempt to delete the file
       const { error: deleteError } = await supabase.storage
         .from('photos')
         .remove([path]);
@@ -142,7 +144,10 @@ export const PhotoManagement = () => {
 
       console.log('Delete successful');
 
-      // Refresh the data immediately
+      // Add a small delay before refreshing the data
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Refresh the data
       await queryClient.invalidateQueries({ queryKey: ['admin-photos'] });
       await queryClient.invalidateQueries({ queryKey: ['photos'] });
 
