@@ -5,9 +5,12 @@ export const deletePhoto = async (photoUrl: string): Promise<boolean> => {
   try {
     console.log('Starting photo deletion for:', photoUrl);
     
-    // Extract the file path from the URL
-    const path = photoUrl.split('/').pop();
-    if (!path) {
+    // Extract the folder and file name from the URL
+    const urlParts = photoUrl.split('/');
+    const fileName = urlParts.pop();
+    const folder = urlParts.pop();
+    
+    if (!fileName || !folder) {
       console.error('Invalid photo URL:', photoUrl);
       toast({
         title: "Feil",
@@ -17,12 +20,14 @@ export const deletePhoto = async (photoUrl: string): Promise<boolean> => {
       return false;
     }
 
+    const filePath = `${folder}/${fileName}`;
+
     // First, check if the file exists
     const { data: fileExists, error: checkError } = await supabase
       .storage
       .from('photos')
-      .list('', {
-        search: path
+      .list(folder, {
+        search: fileName
       });
 
     if (checkError) {
@@ -36,7 +41,7 @@ export const deletePhoto = async (photoUrl: string): Promise<boolean> => {
     }
 
     if (!fileExists.length) {
-      console.error('File not found:', path);
+      console.error('File not found:', filePath);
       toast({
         title: "Feil",
         description: "Bildefil ikke funnet",
@@ -49,7 +54,7 @@ export const deletePhoto = async (photoUrl: string): Promise<boolean> => {
     const { error: deleteError } = await supabase
       .storage
       .from('photos')
-      .remove([path]);
+      .remove([filePath]);
 
     if (deleteError) {
       console.error('Error deleting file:', deleteError);
@@ -61,7 +66,7 @@ export const deletePhoto = async (photoUrl: string): Promise<boolean> => {
       return false;
     }
 
-    console.log('Photo deleted successfully:', path);
+    console.log('Photo deleted successfully:', filePath);
     toast({
       title: "Suksess",
       description: "Bilde slettet",
@@ -88,11 +93,14 @@ export const uploadPhoto = async (file: File): Promise<string | null> => {
     
     const fileExt = file.name.split('.').pop();
     const fileName = `${Math.random()}.${fileExt}`;
+    const folder = 'apartment'; // Default to apartment folder for now
+
+    const filePath = `${folder}/${fileName}`;
 
     const { error: uploadError, data } = await supabase
       .storage
       .from('photos')
-      .upload(fileName, file);
+      .upload(filePath, file);
 
     if (uploadError) {
       console.error('Error uploading file:', uploadError);

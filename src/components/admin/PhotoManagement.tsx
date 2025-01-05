@@ -14,25 +14,48 @@ export const PhotoManagement = () => {
   const fetchPhotos = async () => {
     try {
       console.log('Fetching photos...');
-      const { data: files, error } = await supabase.storage.from('photos').list();
       
-      if (error) {
-        console.error('Error fetching photos:', error);
+      // Fetch photos from both apartment and surroundings folders
+      const { data: apartmentFiles, error: apartmentError } = await supabase.storage
+        .from('photos')
+        .list('apartment', {
+          sortBy: { column: 'name', order: 'asc' },
+        });
+
+      const { data: surroundingFiles, error: surroundingError } = await supabase.storage
+        .from('photos')
+        .list('surroundings', {
+          sortBy: { column: 'name', order: 'asc' },
+        });
+
+      if (apartmentError) {
+        console.error('Error fetching apartment photos:', apartmentError);
         return;
       }
 
-      const photoUrls = files
-        .filter(file => !file.name.startsWith('.'))
-        .map(file => {
-          const { data: { publicUrl } } = supabase
-            .storage
-            .from('photos')
-            .getPublicUrl(file.name);
-          return publicUrl;
-        });
+      if (surroundingError) {
+        console.error('Error fetching surrounding photos:', surroundingError);
+        return;
+      }
 
-      console.log('Photos fetched:', photoUrls);
-      setPhotos(photoUrls);
+      const getPhotoUrl = (folder: string, name: string) => {
+        const { data } = supabase.storage
+          .from('photos')
+          .getPublicUrl(`${folder}/${name}`);
+        return data.publicUrl;
+      };
+
+      const apartmentUrls = (apartmentFiles || [])
+        .filter(file => !file.name.startsWith('.'))
+        .map(file => getPhotoUrl('apartment', file.name));
+
+      const surroundingUrls = (surroundingFiles || [])
+        .filter(file => !file.name.startsWith('.'))
+        .map(file => getPhotoUrl('surroundings', file.name));
+
+      const allPhotos = [...apartmentUrls, ...surroundingUrls];
+      console.log('Photos fetched:', allPhotos);
+      setPhotos(allPhotos);
     } catch (error) {
       console.error('Unexpected error fetching photos:', error);
     } finally {
