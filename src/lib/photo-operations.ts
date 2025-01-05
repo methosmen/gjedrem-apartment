@@ -24,7 +24,7 @@ export const deletePhoto = async (photoUrl: string): Promise<boolean> => {
     console.log('Attempting to delete file:', filePath);
 
     // Delete the file
-    const { error: deleteError, data } = await supabase
+    const { error: deleteError } = await supabase
       .storage
       .from('photos')
       .remove([filePath]);
@@ -39,15 +39,16 @@ export const deletePhoto = async (photoUrl: string): Promise<boolean> => {
       return false;
     }
 
-    // Verify deletion by trying to get the file
-    const { data: checkFile } = await supabase
+    // Give Supabase a moment to process the deletion
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Verify deletion by checking if the file is still accessible
+    const { data: fileExists } = await supabase
       .storage
       .from('photos')
-      .list(filePath.split('/')[0], {
-        search: filePath.split('/')[1]
-      });
+      .download(filePath);
 
-    if (checkFile && checkFile.length > 0) {
+    if (fileExists) {
       console.error('File still exists after deletion attempt');
       toast({
         title: "Feil",
