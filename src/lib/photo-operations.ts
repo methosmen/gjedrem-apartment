@@ -3,7 +3,8 @@ import { toast } from "@/hooks/use-toast";
 
 export const deletePhoto = async (photoUrl: string): Promise<boolean> => {
   try {
-    console.log('Starting photo deletion for:', photoUrl);
+    console.log('Starting photo deletion process...');
+    console.log('Photo URL to delete:', photoUrl);
     
     // Extract the path from the URL
     // Example URL: https://fpriqrupzrfewpjkxyjp.supabase.co/storage/v1/object/public/photos/apartment/file.jpg
@@ -20,15 +21,18 @@ export const deletePhoto = async (photoUrl: string): Promise<boolean> => {
 
     // Get everything after 'photos/'
     const filePath = urlParts[1];
-    console.log('Attempting to delete file with path:', filePath);
+    console.log('Extracted file path:', filePath);
 
-    const { error: deleteError } = await supabase
+    console.log('Initiating Supabase storage remove operation...');
+    const removeResult = await supabase
       .storage
       .from('photos')
-      .remove([filePath]); // Pass the path as an array element
+      .remove([filePath]);
 
-    if (deleteError) {
-      console.error('Error deleting file:', deleteError);
+    console.log('Supabase remove operation result:', removeResult);
+
+    if (removeResult.error) {
+      console.error('Supabase delete error:', removeResult.error);
       toast({
         title: "Feil",
         description: "Kunne ikke slette bildefil",
@@ -37,7 +41,7 @@ export const deletePhoto = async (photoUrl: string): Promise<boolean> => {
       return false;
     }
 
-    console.log('Photo deleted successfully:', filePath);
+    console.log('Photo deletion completed successfully');
     toast({
       title: "Suksess",
       description: "Bilde slettet",
