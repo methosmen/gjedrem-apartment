@@ -85,7 +85,7 @@ export const translations = {
       location: "Map",
     },
     info: {
-      description: "Basement apartment of 45 m2 located next to Bjerkreim River. The apartment has two bedrooms, each with a single bed. There is a shower room and separate toilet. Kitchenette with refrigerator and freezer. Outdoor seating area",
+      description: "Basement apartment of 45 m2 located next to Bjerkreim River. The apartment has two bedrooms, with a total of 3 beds. There is a shower room and separate toilet. Kitchenette with refrigerator and freezer. Outdoor seating area",
     },
     fishing: {
       title: "Salmon Fishing in Bjerkreim River",
@@ -162,7 +162,7 @@ export const translations = {
       location: "Karte",
     },
     info: {
-      description: "45 m2 große Kellerwohnung am Bjerkreim-Fluss. Die Wohnung verfügt über zwei Schlafzimmer, jeweils mit einem Einzelbett. Es gibt ein Duschbad und eine separate Toilette. Küchenzeile mit Kühlschrank und Gefrierschrank. Sitzgelegenheiten im Freien",
+      description: "45 m2 große Kellerwohnung am Bjerkreim-Fluss. Die Wohnung verfügt über zwei Schlafzimmer mit insgesamt 3 Betten. Es gibt ein Duschbad und eine separate Toilette. Küchenzeile mit Kühlschrank und Gefrierschrank. Sitzgelegenheiten im Freien",
     },
     fishing: {
       title: "Lachsangeln im Bjerkreim-Fluss",
