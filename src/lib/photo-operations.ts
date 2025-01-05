@@ -20,12 +20,12 @@ export const deletePhoto = async (photoUrl: string): Promise<boolean> => {
 
     // Get everything after 'photos/'
     const filePath = urlParts[1];
-    console.log('Attempting to delete file:', filePath);
+    console.log('Attempting to delete file with path:', filePath);
 
-    const { error: deleteError, data } = await supabase
+    const { error: deleteError } = await supabase
       .storage
       .from('photos')
-      .remove([filePath]);
+      .remove([filePath]); // Pass the path as an array element
 
     if (deleteError) {
       console.error('Error deleting file:', deleteError);
