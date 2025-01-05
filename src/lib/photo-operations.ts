@@ -26,16 +26,29 @@ export const deletePhoto = async (photoUrl: string): Promise<boolean> => {
     console.log('Extracted file path:', filePath);
 
     console.log('Initiating Supabase storage remove operation...');
-    const { error: removeError } = await supabase
+    const { data, error } = await supabase
       .storage
       .from('photos')
       .remove([filePath]);
 
-    if (removeError) {
-      console.error('Supabase delete error:', removeError);
+    console.log('Supabase storage remove response:', { data, error });
+
+    if (error) {
+      console.error('Supabase delete error:', error);
       toast({
         title: "Feil",
-        description: "Kunne ikke slette bildefil",
+        description: "Kunne ikke slette bildefil: " + error.message,
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    // Check if any files were actually deleted
+    if (!data || data.length === 0) {
+      console.error('No files were deleted');
+      toast({
+        title: "Feil",
+        description: "Ingen filer ble slettet",
         variant: "destructive",
       });
       return false;
