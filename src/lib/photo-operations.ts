@@ -39,25 +39,6 @@ export const deletePhoto = async (photoUrl: string): Promise<boolean> => {
       return false;
     }
 
-    // Give Supabase a moment to process the deletion
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // Verify deletion by checking if the file is still accessible
-    const { data: fileExists } = await supabase
-      .storage
-      .from('photos')
-      .download(filePath);
-
-    if (fileExists) {
-      console.error('File still exists after deletion attempt');
-      toast({
-        title: "Feil",
-        description: "Bildet kunne ikke slettes fullstendig",
-        variant: "destructive",
-      });
-      return false;
-    }
-
     console.log('Photo deleted successfully:', filePath);
     toast({
       title: "Suksess",
