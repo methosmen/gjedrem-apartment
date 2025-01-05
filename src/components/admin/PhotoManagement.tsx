@@ -80,19 +80,38 @@ export const PhotoManagement = () => {
 
   const handlePhotoDelete = async (path: string) => {
     try {
-      console.log('Attempting to delete:', path);
-      const { error, data } = await supabase.storage
+      console.log('Forsøker å slette:', path);
+      
+      // Først, sjekk om filen eksisterer
+      const { data: fileExists, error: checkError } = await supabase.storage
+        .from('photos')
+        .list(path.split('/')[0], {
+          search: path.split('/')[1]
+        });
+
+      if (checkError) {
+        console.error('Feil ved sjekk av fil:', checkError);
+        throw checkError;
+      }
+
+      if (!fileExists || fileExists.length === 0) {
+        console.error('Filen finnes ikke:', path);
+        throw new Error('Filen finnes ikke');
+      }
+
+      // Prøv å slette filen
+      const { error: deleteError, data } = await supabase.storage
         .from('photos')
         .remove([path]);
 
-      if (error) {
-        console.error('Error from Supabase:', error);
-        throw error;
+      if (deleteError) {
+        console.error('Feil fra Supabase ved sletting:', deleteError);
+        throw deleteError;
       }
 
-      console.log('Delete response:', data);
+      console.log('Slette-respons:', data);
       
-      // Invalidate queries after successful deletion
+      // Oppdater cache etter vellykket sletting
       await queryClient.invalidateQueries({ queryKey: ['admin-photos'] });
       await queryClient.invalidateQueries({ queryKey: ['photos'] });
 
@@ -101,10 +120,10 @@ export const PhotoManagement = () => {
         description: "Bilde slettet",
       });
     } catch (error) {
-      console.error('Error deleting photo:', error);
+      console.error('Feil ved sletting av bilde:', error);
       toast({
         title: "Feil",
-        description: "Kunne ikke slette bilde",
+        description: "Kunne ikke slette bilde. Vennligst prøv igjen.",
         variant: "destructive",
       });
     }
