@@ -80,38 +80,40 @@ export const PhotoManagement = () => {
 
   const handlePhotoDelete = async (path: string) => {
     try {
-      console.log('Forsøker å slette:', path);
+      // Get the folder and filename
+      const [folder, filename] = path.split('/');
       
-      // Først, sjekk om filen eksisterer
-      const { data: fileExists, error: checkError } = await supabase.storage
+      // First verify the file exists
+      const { data: files, error: listError } = await supabase.storage
         .from('photos')
-        .list(path.split('/')[0], {
-          search: path.split('/')[1]
-        });
-
-      if (checkError) {
-        console.error('Feil ved sjekk av fil:', checkError);
-        throw checkError;
+        .list(folder);
+        
+      if (listError) {
+        console.error('Error listing files:', listError);
+        throw listError;
       }
 
-      if (!fileExists || fileExists.length === 0) {
-        console.error('Filen finnes ikke:', path);
-        throw new Error('Filen finnes ikke');
+      const fileExists = files?.some(file => file.name === filename);
+      
+      if (!fileExists) {
+        console.error('File not found:', path);
+        throw new Error('File not found');
       }
 
-      // Prøv å slette filen
-      const { error: deleteError, data } = await supabase.storage
+      // Delete the file
+      const { error: deleteError } = await supabase.storage
         .from('photos')
         .remove([path]);
 
       if (deleteError) {
-        console.error('Feil fra Supabase ved sletting:', deleteError);
+        console.error('Error deleting file:', deleteError);
         throw deleteError;
       }
 
-      console.log('Slette-respons:', data);
-      
-      // Oppdater cache etter vellykket sletting
+      // Wait a moment for Supabase to process the deletion
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Refresh the data
       await queryClient.invalidateQueries({ queryKey: ['admin-photos'] });
       await queryClient.invalidateQueries({ queryKey: ['photos'] });
 
@@ -120,10 +122,10 @@ export const PhotoManagement = () => {
         description: "Bilde slettet",
       });
     } catch (error) {
-      console.error('Feil ved sletting av bilde:', error);
+      console.error('Error in handlePhotoDelete:', error);
       toast({
         title: "Feil",
-        description: "Kunne ikke slette bilde. Vennligst prøv igjen.",
+        description: "Kunne ikke slette bilde. Sjekk konsollen for detaljer.",
         variant: "destructive",
       });
     }
