@@ -6,10 +6,9 @@ export const deletePhoto = async (photoUrl: string): Promise<boolean> => {
     console.log('Starting photo deletion for:', photoUrl);
     
     // Extract the path from the URL
-    const urlPath = new URL(photoUrl).pathname;
-    const pathParts = urlPath.split('/');
-    const photosIndex = pathParts.indexOf('photos');
-    if (photosIndex === -1) {
+    // Example URL: https://fpriqrupzrfewpjkxyjp.supabase.co/storage/v1/object/public/photos/apartment/file.jpg
+    const urlParts = photoUrl.split('/photos/');
+    if (urlParts.length !== 2) {
       console.error('Invalid photo URL structure:', photoUrl);
       toast({
         title: "Feil",
@@ -19,12 +18,11 @@ export const deletePhoto = async (photoUrl: string): Promise<boolean> => {
       return false;
     }
 
-    // Get the path after 'photos/'
-    const filePath = pathParts.slice(photosIndex + 1).join('/');
+    // Get everything after 'photos/'
+    const filePath = urlParts[1];
     console.log('Attempting to delete file:', filePath);
 
-    // Delete the file
-    const { error: deleteError } = await supabase
+    const { error: deleteError, data } = await supabase
       .storage
       .from('photos')
       .remove([filePath]);
