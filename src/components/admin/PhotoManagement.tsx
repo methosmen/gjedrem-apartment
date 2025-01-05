@@ -7,44 +7,63 @@ export const PhotoManagement = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: photos = { apartmentPhotos: [], surroundingPhotos: [] }, isLoading } = useQuery({
+  const { data: photos = { apartmentPhotos: [], surroundingPhotos: [] }, isLoading, error } = useQuery({
     queryKey: ['admin-photos'],
     queryFn: async () => {
-      const { data: apartmentFiles } = await supabase.storage
-        .from('photos')
-        .list('apartment', {
-          sortBy: { column: 'name', order: 'asc' },
-        });
-
-      const { data: surroundingFiles } = await supabase.storage
-        .from('photos')
-        .list('surroundings', {
-          sortBy: { column: 'name', order: 'asc' },
-        });
-
-      const getPhotoUrl = (path: string) => {
-        const { data } = supabase.storage
+      console.log('Fetching photos...');
+      try {
+        const { data: apartmentFiles, error: apartmentError } = await supabase.storage
           .from('photos')
-          .getPublicUrl(path);
-        return data.publicUrl;
-      };
+          .list('apartment', {
+            sortBy: { column: 'name', order: 'asc' },
+          });
 
-      const apartmentPhotos = (apartmentFiles || []).map(file => ({
-        src: getPhotoUrl(`apartment/${file.name}`),
-        alt: file.name.split('.')[0],
-        path: `apartment/${file.name}`
-      }));
+        if (apartmentError) {
+          console.error('Error fetching apartment photos:', apartmentError);
+          throw apartmentError;
+        }
 
-      const surroundingPhotos = (surroundingFiles || []).map(file => ({
-        src: getPhotoUrl(`surroundings/${file.name}`),
-        alt: file.name.split('.')[0],
-        path: `surroundings/${file.name}`
-      }));
+        const { data: surroundingFiles, error: surroundingError } = await supabase.storage
+          .from('photos')
+          .list('surroundings', {
+            sortBy: { column: 'name', order: 'asc' },
+          });
 
-      return {
-        apartmentPhotos,
-        surroundingPhotos
-      };
+        if (surroundingError) {
+          console.error('Error fetching surrounding photos:', surroundingError);
+          throw surroundingError;
+        }
+
+        const getPhotoUrl = (path: string) => {
+          const { data } = supabase.storage
+            .from('photos')
+            .getPublicUrl(path);
+          return data.publicUrl;
+        };
+
+        console.log('Apartment files:', apartmentFiles);
+        console.log('Surrounding files:', surroundingFiles);
+
+        const apartmentPhotos = (apartmentFiles || []).map(file => ({
+          src: getPhotoUrl(`apartment/${file.name}`),
+          alt: file.name.split('.')[0],
+          path: `apartment/${file.name}`
+        }));
+
+        const surroundingPhotos = (surroundingFiles || []).map(file => ({
+          src: getPhotoUrl(`surroundings/${file.name}`),
+          alt: file.name.split('.')[0],
+          path: `surroundings/${file.name}`
+        }));
+
+        return {
+          apartmentPhotos,
+          surroundingPhotos
+        };
+      } catch (error) {
+        console.error('Error in photo fetch:', error);
+        throw error;
+      }
     },
   });
 
@@ -53,13 +72,23 @@ export const PhotoManagement = () => {
     if (!file) return;
 
     try {
+      console.log('Starting upload for file:', file.name, 'to folder:', type);
+      
       const fileExt = file.name.split('.').pop();
       const fileName = `${type}/${Math.random()}.${fileExt}`;
-      const { error: uploadError } = await supabase.storage
+
+      console.log('Generated filename:', fileName);
+
+      const { error: uploadError, data } = await supabase.storage
         .from('photos')
         .upload(fileName, file);
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        throw uploadError;
+      }
+
+      console.log('Upload successful:', data);
 
       await queryClient.invalidateQueries({ queryKey: ['admin-photos'] });
       await queryClient.invalidateQueries({ queryKey: ['photos'] });
@@ -69,10 +98,10 @@ export const PhotoManagement = () => {
         description: "Bilde lastet opp",
       });
     } catch (error) {
-      console.error('Error uploading photo:', error);
+      console.error('Error in handlePhotoUpload:', error);
       toast({
         title: "Feil",
-        description: "Kunne ikke laste opp bilde",
+        description: "Kunne ikke laste opp bilde. Sjekk konsollen for detaljer.",
         variant: "destructive",
       });
     }
@@ -80,10 +109,11 @@ export const PhotoManagement = () => {
 
   const handlePhotoDelete = async (path: string) => {
     try {
-      // Get the folder and filename
-      const [folder, filename] = path.split('/');
+      console.log('Attempting to delete:', path);
       
-      // First verify the file exists
+      const [folder, filename] = path.split('/');
+      console.log('Folder:', folder, 'Filename:', filename);
+
       const { data: files, error: listError } = await supabase.storage
         .from('photos')
         .list(folder);
@@ -93,6 +123,7 @@ export const PhotoManagement = () => {
         throw listError;
       }
 
+      console.log('Files in folder:', files);
       const fileExists = files?.some(file => file.name === filename);
       
       if (!fileExists) {
@@ -100,7 +131,6 @@ export const PhotoManagement = () => {
         throw new Error('File not found');
       }
 
-      // Delete the file
       const { error: deleteError } = await supabase.storage
         .from('photos')
         .remove([path]);
@@ -110,10 +140,9 @@ export const PhotoManagement = () => {
         throw deleteError;
       }
 
-      // Wait a moment for Supabase to process the deletion
-      await new Promise(resolve => setTimeout(resolve, 500));
+      console.log('Delete successful');
 
-      // Refresh the data
+      // Refresh the data immediately
       await queryClient.invalidateQueries({ queryKey: ['admin-photos'] });
       await queryClient.invalidateQueries({ queryKey: ['photos'] });
 
@@ -131,8 +160,17 @@ export const PhotoManagement = () => {
     }
   };
 
+  if (error) {
+    console.error('Error loading photos:', error);
+    return (
+      <div className="text-red-500">
+        Kunne ikke laste bilder. Vennligst oppdater siden eller prøv igjen senere.
+      </div>
+    );
+  }
+
   if (isLoading) {
-    return <div>Laster...</div>;
+    return <div>Laster bilder...</div>;
   }
 
   return (

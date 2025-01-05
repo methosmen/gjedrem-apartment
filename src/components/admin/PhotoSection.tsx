@@ -11,6 +11,16 @@ interface PhotoSectionProps {
 }
 
 export const PhotoSection = ({ title, photos, onUpload, onDelete, type }: PhotoSectionProps) => {
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      await onUpload(e);
+      // Reset input value after upload
+      e.target.value = '';
+    } catch (error) {
+      console.error('Error in upload handler:', error);
+    }
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
@@ -18,7 +28,7 @@ export const PhotoSection = ({ title, photos, onUpload, onDelete, type }: PhotoS
         <input
           type="file"
           accept="image/*"
-          onChange={onUpload}
+          onChange={handleUpload}
           className="hidden"
           id={`${type}-photo-upload`}
         />
