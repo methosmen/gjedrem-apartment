@@ -11,11 +11,11 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3000,
+    host: "::",
+    port: 8080,
   },
-  // Add this section to handle client-side routing
   preview: {
-    port: 3000,
+    port: 8080,
   },
   build: {
     rollupOptions: {

@@ -22,12 +22,8 @@ const Admin = () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
-          navigate('/');
-          toast({
-            title: "Ingen tilgang",
-            description: "Du må være logget inn for å få tilgang til dette panelet",
-            variant: "destructive",
-          });
+          setIsAuthenticated(false);
+          setIsLoading(false);
           return;
         }
 
@@ -61,8 +57,8 @@ const Admin = () => {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!session) {
-        navigate('/');
         setIsAuthenticated(false);
+        navigate('/');
         return;
       }
 
@@ -74,8 +70,8 @@ const Admin = () => {
         .single();
 
       if (!profile?.is_admin) {
-        navigate('/');
         setIsAuthenticated(false);
+        navigate('/');
       } else {
         setIsAuthenticated(true);
       }
@@ -87,7 +83,14 @@ const Admin = () => {
   }, [navigate, toast]);
 
   if (isLoading) {
-    return <div className="flex items-center justify-center min-h-screen">Laster...</div>;
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="container mx-auto px-4 pt-24 flex items-center justify-center">
+          <div className="text-xl">Laster...</div>
+        </div>
+      </div>
+    );
   }
 
   if (!isAuthenticated) {
