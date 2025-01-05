@@ -6,12 +6,10 @@ export const deletePhoto = async (photoUrl: string): Promise<boolean> => {
     console.log('Starting photo deletion process...');
     console.log('Photo URL to delete:', photoUrl);
     
-    // Extract the path from the URL
     // The URL format is: https://fpriqrupzrfewpjkxyjp.supabase.co/storage/v1/object/public/photos/[folder]/[filename]
-    const pathRegex = /\/photos\/(apartment|surroundings)\/[^/]+$/;
-    const match = photoUrl.match(pathRegex);
+    const pathMatch = photoUrl.match(/photos\/(apartment|surroundings)\/[^/]+$/);
     
-    if (!match) {
+    if (!pathMatch) {
       console.error('Could not extract file path from URL:', photoUrl);
       toast({
         title: "Feil",
@@ -21,8 +19,7 @@ export const deletePhoto = async (photoUrl: string): Promise<boolean> => {
       return false;
     }
 
-    // Remove the leading slash to get the correct path
-    const filePath = match[0].substring(1);
+    const filePath = pathMatch[0];
     console.log('Extracted file path:', filePath);
 
     console.log('Initiating Supabase storage remove operation...');
