@@ -2,6 +2,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PhotoSection } from "./PhotoSection";
+import { deletePhoto, uploadPhoto } from "@/lib/photo-operations";
 
 export const PhotoManagement = () => {
   const { toast } = useToast();
@@ -41,9 +42,6 @@ export const PhotoManagement = () => {
           return data.publicUrl;
         };
 
-        console.log('Apartment files:', apartmentFiles);
-        console.log('Surrounding files:', surroundingFiles);
-
         const apartmentPhotos = (apartmentFiles || []).map(file => ({
           src: getPhotoUrl(`apartment/${file.name}`),
           alt: file.name.split('.')[0],
@@ -72,31 +70,19 @@ export const PhotoManagement = () => {
     if (!file) return;
 
     try {
-      console.log('Starting upload for file:', file.name, 'to folder:', type);
+      const { success } = await uploadPhoto(file, type);
       
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${type}/${Math.random()}.${fileExt}`;
+      if (success) {
+        // Add a small delay before refreshing to ensure Supabase has processed the upload
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        await queryClient.invalidateQueries({ queryKey: ['admin-photos'] });
+        await queryClient.invalidateQueries({ queryKey: ['photos'] });
 
-      console.log('Generated filename:', fileName);
-
-      const { error: uploadError, data } = await supabase.storage
-        .from('photos')
-        .upload(fileName, file);
-
-      if (uploadError) {
-        console.error('Upload error:', uploadError);
-        throw uploadError;
+        toast({
+          title: "Suksess",
+          description: "Bilde lastet opp",
+        });
       }
-
-      console.log('Upload successful:', data);
-
-      await queryClient.invalidateQueries({ queryKey: ['admin-photos'] });
-      await queryClient.invalidateQueries({ queryKey: ['photos'] });
-
-      toast({
-        title: "Suksess",
-        description: "Bilde lastet opp",
-      });
     } catch (error) {
       console.error('Error in handlePhotoUpload:', error);
       toast({
@@ -109,52 +95,23 @@ export const PhotoManagement = () => {
 
   const handlePhotoDelete = async (path: string) => {
     try {
-      console.log('Attempting to delete:', path);
+      console.log('Attempting to delete photo:', path);
       
-      const [folder, filename] = path.split('/');
-      console.log('Folder:', folder, 'Filename:', filename);
-
-      // First, verify the file exists
-      const { data: files, error: listError } = await supabase.storage
-        .from('photos')
-        .list(folder);
+      const { success } = await deletePhoto(path);
+      
+      if (success) {
+        // Add a longer delay before refreshing to ensure Supabase has processed the deletion
+        await new Promise(resolve => setTimeout(resolve, 1500));
         
-      if (listError) {
-        console.error('Error listing files:', listError);
-        throw listError;
+        // Refresh both queries to ensure UI is updated
+        await queryClient.invalidateQueries({ queryKey: ['admin-photos'] });
+        await queryClient.invalidateQueries({ queryKey: ['photos'] });
+
+        toast({
+          title: "Suksess",
+          description: "Bilde slettet",
+        });
       }
-
-      console.log('Files in folder:', files);
-      const fileExists = files?.some(file => file.name === filename);
-      
-      if (!fileExists) {
-        console.error('File not found:', path);
-        throw new Error('File not found');
-      }
-
-      // Attempt to delete the file
-      const { error: deleteError } = await supabase.storage
-        .from('photos')
-        .remove([path]);
-
-      if (deleteError) {
-        console.error('Error deleting file:', deleteError);
-        throw deleteError;
-      }
-
-      console.log('Delete successful');
-
-      // Add a small delay before refreshing the data
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      // Refresh the data
-      await queryClient.invalidateQueries({ queryKey: ['admin-photos'] });
-      await queryClient.invalidateQueries({ queryKey: ['photos'] });
-
-      toast({
-        title: "Suksess",
-        description: "Bilde slettet",
-      });
     } catch (error) {
       console.error('Error in handlePhotoDelete:', error);
       toast({
@@ -166,7 +123,6 @@ export const PhotoManagement = () => {
   };
 
   if (error) {
-    console.error('Error loading photos:', error);
     return (
       <div className="text-red-500">
         Kunne ikke laste bilder. Vennligst oppdater siden eller prøv igjen senere.

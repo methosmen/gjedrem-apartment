@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
+import { useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,8 +18,21 @@ interface PhotoDeleteDialogProps {
 }
 
 export const PhotoDeleteDialog = ({ onConfirmDelete }: PhotoDeleteDialogProps) => {
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleDelete = async () => {
+    try {
+      setIsDeleting(true);
+      await onConfirmDelete();
+    } finally {
+      setIsDeleting(false);
+      setIsOpen(false);
+    }
+  };
+
   return (
-    <AlertDialog>
+    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogTrigger asChild>
         <Button
           variant="destructive"
@@ -36,9 +50,12 @@ export const PhotoDeleteDialog = ({ onConfirmDelete }: PhotoDeleteDialogProps) =
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Avbryt</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirmDelete}>
-            Slett
+          <AlertDialogCancel disabled={isDeleting}>Avbryt</AlertDialogCancel>
+          <AlertDialogAction 
+            onClick={handleDelete}
+            disabled={isDeleting}
+          >
+            {isDeleting ? 'Sletter...' : 'Slett'}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
