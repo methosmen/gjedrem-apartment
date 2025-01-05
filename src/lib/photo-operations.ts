@@ -19,7 +19,8 @@ export const deletePhoto = async (photoUrl: string): Promise<boolean> => {
       return false;
     }
 
-    const filePath = pathMatch[0];
+    // Remove 'photos/' from the beginning of the path since we're already specifying the bucket
+    const filePath = pathMatch[0].replace('photos/', '');
     console.log('Extracted file path:', filePath);
 
     console.log('Initiating Supabase storage remove operation...');
