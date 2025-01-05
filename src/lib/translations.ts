@@ -8,7 +8,7 @@ export const translations = {
       location: "Kart",
     },
     info: {
-      description: "Kjellerleilighet på 45 m2 som ligger like ved Bjerkreimselva. Leiligheten har to soverom, hver med en enkeltseng. Det er dusjrom og seperat toalett. Hybelkjøkken med kjøleskap og fryser. Utendørs sittegruppe",
+      description: "Kjellerleilighet på 45 m2 som ligger like ved Bjerkreimselva. Leiligheten har to soverom, totalt 3 sengeplasser. Det er dusjrom og seperat toalett. Hybelkjøkken med kjøleskap og fryser. Utendørs sittegruppe",
     },
     fishing: {
       title: "Laksefiske i Bjerkreimselva",
