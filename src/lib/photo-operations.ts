@@ -8,7 +8,6 @@ export const deletePhoto = async (photoUrl: string): Promise<boolean> => {
     // Extract the path from the URL
     const urlPath = new URL(photoUrl).pathname;
     const pathParts = urlPath.split('/');
-    // The file path will be after 'photos/' in the URL
     const photosIndex = pathParts.indexOf('photos');
     if (photosIndex === -1) {
       console.error('Invalid photo URL structure:', photoUrl);
@@ -25,7 +24,7 @@ export const deletePhoto = async (photoUrl: string): Promise<boolean> => {
     console.log('Attempting to delete file:', filePath);
 
     // Delete the file
-    const { error: deleteError } = await supabase
+    const { error: deleteError, data } = await supabase
       .storage
       .from('photos')
       .remove([filePath]);
@@ -35,6 +34,24 @@ export const deletePhoto = async (photoUrl: string): Promise<boolean> => {
       toast({
         title: "Feil",
         description: "Kunne ikke slette bildefil",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    // Verify deletion by trying to get the file
+    const { data: checkFile } = await supabase
+      .storage
+      .from('photos')
+      .list(filePath.split('/')[0], {
+        search: filePath.split('/')[1]
+      });
+
+    if (checkFile && checkFile.length > 0) {
+      console.error('File still exists after deletion attempt');
+      toast({
+        title: "Feil",
+        description: "Bildet kunne ikke slettes fullstendig",
         variant: "destructive",
       });
       return false;
