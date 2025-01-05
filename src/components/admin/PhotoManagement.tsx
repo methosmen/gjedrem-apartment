@@ -80,15 +80,19 @@ export const PhotoManagement = () => {
 
   const handlePhotoDelete = async (path: string) => {
     try {
-      const { error } = await supabase.storage
+      console.log('Attempting to delete:', path);
+      const { error, data } = await supabase.storage
         .from('photos')
         .remove([path]);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error from Supabase:', error);
+        throw error;
+      }
 
-      // Vent litt før vi oppdaterer visningen for å gi Supabase tid til å fullføre slettingen
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('Delete response:', data);
       
+      // Invalidate queries after successful deletion
       await queryClient.invalidateQueries({ queryKey: ['admin-photos'] });
       await queryClient.invalidateQueries({ queryKey: ['photos'] });
 
