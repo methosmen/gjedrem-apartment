@@ -17,6 +17,7 @@ export const BookingCalendar = ({ date, setDate, occupiedDates }: BookingCalenda
         selected={date}
         onSelect={setDate}
         className="rounded-md border bg-background"
+        weekStartsOn={1}
         disabled={(date: Date) => {
           return date < new Date() || occupiedDates.some(occupiedDate => 
             occupiedDate.getFullYear() === date.getFullYear() &&
